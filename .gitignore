@@ -20,3 +20,4 @@ gradle-daemon-jvm.properties
 CLAUDE.md
 graphify-out
 .claude.local.md
+.vscode/
