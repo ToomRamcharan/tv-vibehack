@@ -92,7 +92,7 @@ public class VideoPlayerActivity extends Activity {
                 Toast.makeText(this, "Part " + currentPart + " finished. Playing next part...", Toast.LENGTH_LONG).show();
                 playPart(currentPart + 1);
             } else {
-                Toast.makeText(this, "Media archive playback completed 🙏", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Media archive playback completed", Toast.LENGTH_LONG).show();
                 finish();
             }
         });

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">Входы</string>
+    <string name="settings">Настройки</string>
+    <string name="choose_input">Входы</string>
+    <string name="connected">Подключено</string>
+    <string name="standby">Ожидание</string>
+    <string name="not_connected">Нет устройства</string>
+    <string name="live_tv">ТВ-эфир</string>
+    <string name="no_inputs">Входы не найдены</string>
+    <string name="offline">Нет сети</string>
+    <string name="nlrc_tagline">Развлекательный центр</string>
+    <string name="greeting_morning">Доброе утро! Добро пожаловать</string>
+    <string name="greeting_afternoon">Добрый день! Добро пожаловать</string>
+    <string name="greeting_evening">Добрый вечер! Добро пожаловать</string>
+    <string name="greeting_night">Спокойной ночи!</string>
+    <string name="pin_to_dock">Закрепить в доке</string>
+    <string name="remove_from_dock">Убрать из дока</string>
+    <string name="app_info">О приложении</string>
+    <string name="pinned_to_dock">%1$s закреплено в доке</string>
+    <string name="removed_from_dock">%1$s убрано из дока</string>
+    <string name="move_left">Влево</string>
+    <string name="move_right">Вправо</string>
+    <string name="hide_app">Скрыть</string>
+    <string name="hidden_apps">Скрытые приложения</string>
+    <string name="app_hidden">%1$s скрыто</string>
+    <string name="app_shown">%1$s снова показано</string>
+</resources>

@@ -118,12 +118,12 @@
                         android:textAllCaps="true" />
                 </LinearLayout>
 
-                <!-- Father's Greeting: Time-based Respectful Telugu Wish -->
+                <!-- Time-of-day greeting -->
                 <TextView
                     android:id="@+id/fatherGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="శుభ మధ్యాహ్నం తూం నారాయణ గారు! 🙏"
+                    android:text="Good afternoon! Welcome"
                     android:textColor="#FFF59D"
                     android:textSize="17sp"
                     android:fontFamily="@font/outfit"
@@ -236,35 +236,6 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- Telangana Festival Wishes Banner (Dynamic) -->
-        <LinearLayout
-            android:id="@+id/festivalBanner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_festival_pill"
-            android:paddingStart="14dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_marginTop="6dp">
-
-            <TextView
-                android:id="@+id/festivalText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🌸 సద్దుల బతుకమ్మ &amp; విజయదశమి దసరా శుభాకాంక్షలు · Happy Bathukamma &amp; Dussehra! 🌸"
-                android:textColor="#FFF9C4"
-                android:textSize="12sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 600"
-                android:letterSpacing="0.04"
-                android:shadowColor="#E6000000"
-                android:shadowDx="1"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-        </LinearLayout>
 
         <!-- Subtle clean divider line -->
         <View

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">信号源</string>
+    <string name="settings">设置</string>
+    <string name="choose_input">信号源</string>
+    <string name="connected">已连接</string>
+    <string name="standby">待机</string>
+    <string name="not_connected">无设备</string>
+    <string name="live_tv">电视直播</string>
+    <string name="no_inputs">未找到信号源</string>
+    <string name="offline">离线</string>
+    <string name="nlrc_tagline">娱乐中心</string>
+    <string name="greeting_morning">早上好！欢迎</string>
+    <string name="greeting_afternoon">下午好！欢迎</string>
+    <string name="greeting_evening">晚上好！欢迎</string>
+    <string name="greeting_night">晚安！</string>
+    <string name="pin_to_dock">固定到程序坞</string>
+    <string name="remove_from_dock">从程序坞移除</string>
+    <string name="app_info">应用信息</string>
+    <string name="pinned_to_dock">已将%1$s固定到程序坞</string>
+    <string name="removed_from_dock">已将%1$s从程序坞移除</string>
+    <string name="move_left">向左移动</string>
+    <string name="move_right">向右移动</string>
+    <string name="hide_app">隐藏</string>
+    <string name="hidden_apps">已隐藏的应用</string>
+    <string name="app_hidden">已隐藏%1$s</string>
+    <string name="app_shown">已重新显示%1$s</string>
+</resources>

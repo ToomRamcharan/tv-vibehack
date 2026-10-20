@@ -17,7 +17,11 @@
     <string name="offline">Offline</string>
     <string name="accessibility_service_description">NLRC Launcher Key and Window Interceptor</string>
 
-    <!-- Dock menu -->
+    <!-- Greetings and dock menu; translated in values-pt/es/fr/it/de/nl/ru/zh/te/hi. -->
+    <string name="greeting_morning">Good morning! Welcome</string>
+    <string name="greeting_afternoon">Good afternoon! Welcome</string>
+    <string name="greeting_evening">Good evening! Welcome</string>
+    <string name="greeting_night">Good night!</string>
     <string name="pin_to_dock">Pin to dock</string>
     <string name="remove_from_dock">Remove from dock</string>
     <string name="app_info">App info</string>

@@ -324,7 +324,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         pBadgeText.setColor(Color.WHITE);
         pBadgeText.setTextSize(9f * d);
         pBadgeText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        c.drawText("3 భాగాలు", w - (62 * d), 21 * d, pBadgeText);
+        c.drawText("3 Parts", w - (62 * d), 21 * d, pBadgeText);
 
         // 4. Main Title
         Paint pTitle = new Paint(Paint.ANTI_ALIAS_FLAG);

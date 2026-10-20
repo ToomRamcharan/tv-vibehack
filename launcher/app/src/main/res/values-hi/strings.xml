@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">इनपुट</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="choose_input">इनपुट</string>
+    <string name="connected">कनेक्टेड</string>
+    <string name="standby">स्टैंडबाय</string>
+    <string name="not_connected">कोई डिवाइस नहीं</string>
+    <string name="live_tv">लाइव टीवी</string>
+    <string name="no_inputs">कोई इनपुट नहीं मिला</string>
+    <string name="offline">ऑफ़लाइन</string>
+    <string name="nlrc_tagline">मनोरंजन केंद्र</string>
+    <string name="greeting_morning">सुप्रभात! स्वागत है</string>
+    <string name="greeting_afternoon">शुभ दोपहर! स्वागत है</string>
+    <string name="greeting_evening">शुभ संध्या! स्वागत है</string>
+    <string name="greeting_night">शुभ रात्रि!</string>
+    <string name="pin_to_dock">डॉक में पिन करें</string>
+    <string name="remove_from_dock">डॉक से हटाएँ</string>
+    <string name="app_info">ऐप की जानकारी</string>
+    <string name="pinned_to_dock">%1$s डॉक में पिन किया गया</string>
+    <string name="removed_from_dock">%1$s डॉक से हटाया गया</string>
+    <string name="move_left">बाएँ ले जाएँ</string>
+    <string name="move_right">दाएँ ले जाएँ</string>
+    <string name="hide_app">छिपाएँ</string>
+    <string name="hidden_apps">छिपे हुए ऐप</string>
+    <string name="app_hidden">%1$s छिपाया गया</string>
+    <string name="app_shown">%1$s फिर से दिखाया गया</string>
+</resources>

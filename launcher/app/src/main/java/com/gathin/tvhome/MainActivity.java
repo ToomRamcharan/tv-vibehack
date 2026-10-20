@@ -65,7 +65,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private boolean heroShown;
     private TextView greeting;
     private TextView fatherGreeting;
-    private TextView festivalText;
     private TextView btnWifi;
     private SpringAnimation springX, springY;
     private float glassTargetX, glassTargetY;
@@ -79,7 +78,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updateFatherGreeting();
-            updateFestivalGreeting();
             updateWifiLabel();
             handler.postDelayed(this, MINUTE_MS);
         }
@@ -105,9 +103,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 ambientGlow.setGradientRadius((r - l) * 0.62f));
         greeting = findViewById(R.id.greeting);
         fatherGreeting = findViewById(R.id.fatherGreeting);
-        festivalText = findViewById(R.id.festivalText);
         updateFatherGreeting();
-        updateFestivalGreeting();
         btnWifi = findViewById(R.id.btnWifi);
         BootReceiver.ensureAccessibilityEnabled(this);
 
@@ -186,7 +182,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.scheduleLayoutAnimation();
         updateGreeting();
         updateFatherGreeting();
-        updateFestivalGreeting();
         updateWifiLabel();
         BootReceiver.ensureAccessibilityEnabled(this);
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -368,87 +363,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // No-op: NLRC brand name is declared in activity_main.xml — no runtime greeting needed.
     }
 
-    /**
-     * Polite home greeting based on time of day:
-     * - Morning (5:00 AM – 11:59 AM): శుభోదయం · స్వాగతం! 🙏
-     * - Afternoon (12:00 PM – 4:59 PM): శుభ మధ్యాహ్నం · స్వాగతం! 🙏
-     * - Evening (5:00 PM – 8:59 PM): శుభ సాయంత్రం · స్వాగతం! 🙏
-     * - Night (9:00 PM – 4:59 AM): శుభ రాత్రి · స్వాగతం! 🙏
-     */
+    /** Greeting based on time of day: morning 5-12, afternoon 12-17, evening 17-21, night otherwise. */
     private void updateFatherGreeting() {
         if (fatherGreeting == null) return;
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        int hour = cal.get(java.util.Calendar.HOUR_OF_DAY);
-
-        String wish;
-        if (hour >= 5 && hour < 12) {
-            wish = "శుభోదయం · స్వాగతం! 🙏";
-        } else if (hour >= 12 && hour < 17) {
-            wish = "శుభ మధ్యాహ్నం · స్వాగతం! 🙏";
-        } else if (hour >= 17 && hour < 21) {
-            wish = "శుభ సాయంత్రం · స్వాగతం! 🙏";
-        } else {
-            wish = "శుభ రాత్రి · స్వాగతం! 🙏";
-        }
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        int wish;
+        if (hour >= 5 && hour < 12)       wish = R.string.greeting_morning;
+        else if (hour >= 12 && hour < 17) wish = R.string.greeting_afternoon;
+        else if (hour >= 17 && hour < 21) wish = R.string.greeting_evening;
+        else                              wish = R.string.greeting_night;
         fatherGreeting.setText(wish);
-    }
-
-    /** Updates dynamic Telangana Panchangam, Calendar & Festival wishes based on current date. */
-    private void updateFestivalGreeting() {
-        if (festivalText == null) return;
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        int month = cal.get(java.util.Calendar.MONTH) + 1; // 1-based: 1=Jan, 10=Oct
-        int day = cal.get(java.util.Calendar.DAY_OF_MONTH);
-        int dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
-
-        String teluguDay;
-        switch (dayOfWeek) {
-            case java.util.Calendar.SUNDAY:    teluguDay = "ఆదివారం"; break;
-            case java.util.Calendar.MONDAY:    teluguDay = "సోమవారం"; break;
-            case java.util.Calendar.TUESDAY:   teluguDay = "మంగళవారం"; break;
-            case java.util.Calendar.WEDNESDAY: teluguDay = "బుధవారం"; break;
-            case java.util.Calendar.THURSDAY:  teluguDay = "గురువారం"; break;
-            case java.util.Calendar.FRIDAY:    teluguDay = "శుక్రవారం"; break;
-            case java.util.Calendar.SATURDAY:  teluguDay = "శనివారం"; break;
-            default: teluguDay = "";
-        }
-
-        String greeting;
-
-        // Dynamic Telangana & Indian Festivals + Panchangam Details
-        if (month == 10 && day == 19) {
-            // Today: Monday 19 October 2026 (Saddula Bathukamma & Navami)
-            greeting = "🌸 సద్దుల బతుకమ్మ & మహార్నవమి · ఆశ్వయుజ శుక్ల నవమి · " + teluguDay + " 🌸";
-        } else if (month == 10 && day == 20) {
-            // Tomorrow: Tuesday 20 October 2026 (Dussehra / Vijayadashami)
-            greeting = "🌺 విజయదశమి దసరా పండుగ శుభాకాంక్షలు · ఆశ్వయుజ శుక్ల దశమి · " + teluguDay + " 🌺";
-        } else if (month == 10 && day <= 22) {
-            greeting = "🌸 విజయదశమి దసరా శుభాకాంక్షలు · ఆశ్వయుజ మాసం · " + teluguDay + " 🌸";
-        } else if (month == 11 && day <= 15) {
-            greeting = "🪔 దీపావళి లక్ష్మీ పూజ శుభాకాంక్షలు · కార్తీక మాసం · " + teluguDay + " 🪔";
-        } else if (month == 1 && day >= 13 && day <= 17) {
-            greeting = "🪁 సంక్రాంతి & కనుమ పండుగ శుభాకాంక్షలు · పుష్య మాసం · " + teluguDay + " 🪁";
-        } else if ((month == 2 && day >= 24) || (month == 3 && day <= 4)) {
-            greeting = "🔱 మహా శివరాత్రి శుభాకాంక్షలు · మాఘ బహుళ చతుర్దశి · " + teluguDay + " 🔱";
-        } else if (month == 3 && day >= 22 && day <= 27) {
-            greeting = "🎨 హోలీ పండుగ శుభాకాంక్షలు · ఫాల్గుణ పౌర్ణమి · " + teluguDay + " 🎨";
-        } else if ((month == 3 && day >= 28) || (month == 4 && day <= 8)) {
-            greeting = "🌿 శ్రీ క్రోధి/విశ్వావసు నామ ఉగాది శుభాకాంక్షలు · చైత్ర శుద్ధ పాడ్యమి · " + teluguDay + " 🌿";
-        } else if (month == 4 && day >= 14 && day <= 22) {
-            greeting = "🏹 శ్రీరామనవమి శుభాకాంక్షలు · చైత్ర శుక్ల నవమి · " + teluguDay + " 🏹";
-        } else if (month == 7 || (month == 8 && day <= 10)) {
-            greeting = "🌺 తెలంగాణ చారిత్రక బోనాలు పండుగ శుభాకాంక్షలు · ఆషాఢ మాసం · " + teluguDay + " 🌺";
-        } else if (month == 8 && day >= 14 && day <= 22) {
-            greeting = "🪢 రక్షాబంధన్ & వరలక్ష్మి వ్రత శుభాకాంక్షలు · శ్రావణ మాసం · " + teluguDay + " 🪢";
-        } else if ((month == 8 && day >= 25) || (month == 9 && day <= 15)) {
-            greeting = "🐘 వినాయక చవితి శుభాకాంక్షలు · భాద్రపద శుక్ల చవితి · " + teluguDay + " 🐘";
-        } else if ((month == 12 && day >= 30) || (month == 1 && day <= 3)) {
-            greeting = "✨ నూతన సంవత్సర శుభాకాంక్షలు · Happy New Year · " + teluguDay + " ✨";
-        } else {
-            greeting = "🕉️ శ్రీ సాంబ సదాశివాయ నమః · " + teluguDay + " శుభ దినం · తూం వారి నివాసం 🕉️";
-        }
-
-        festivalText.setText(greeting);
     }
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */

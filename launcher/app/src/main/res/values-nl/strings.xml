@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">Ingangen</string>
+    <string name="settings">Instellingen</string>
+    <string name="choose_input">Ingangen</string>
+    <string name="connected">Verbonden</string>
+    <string name="standby">Stand-by</string>
+    <string name="not_connected">Geen apparaat</string>
+    <string name="live_tv">Live-tv</string>
+    <string name="no_inputs">Geen ingangen gevonden</string>
+    <string name="offline">Offline</string>
+    <string name="nlrc_tagline">Entertainmentcentrum</string>
+    <string name="greeting_morning">Goedemorgen! Welkom</string>
+    <string name="greeting_afternoon">Goedemiddag! Welkom</string>
+    <string name="greeting_evening">Goedenavond! Welkom</string>
+    <string name="greeting_night">Welterusten!</string>
+    <string name="pin_to_dock">Vastzetten in dock</string>
+    <string name="remove_from_dock">Uit dock verwijderen</string>
+    <string name="app_info">App-info</string>
+    <string name="pinned_to_dock">%1$s vastgezet in dock</string>
+    <string name="removed_from_dock">%1$s uit dock verwijderd</string>
+    <string name="move_left">Naar links</string>
+    <string name="move_right">Naar rechts</string>
+    <string name="hide_app">Verbergen</string>
+    <string name="hidden_apps">Verborgen apps</string>
+    <string name="app_hidden">%1$s verborgen</string>
+    <string name="app_shown">%1$s weer zichtbaar</string>
+</resources>

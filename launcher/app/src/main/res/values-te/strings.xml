@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">ఇన్‌పుట్‌లు</string>
+    <string name="settings">సెట్టింగ్‌లు</string>
+    <string name="choose_input">ఇన్‌పుట్‌లు</string>
+    <string name="connected">కనెక్ట్ అయింది</string>
+    <string name="standby">స్టాండ్‌బై</string>
+    <string name="not_connected">పరికరం లేదు</string>
+    <string name="live_tv">లైవ్ టీవీ</string>
+    <string name="no_inputs">ఇన్‌పుట్‌లు కనుగొనబడలేదు</string>
+    <string name="offline">ఆఫ్‌లైన్</string>
+    <string name="nlrc_tagline">వినోద కేంద్రం</string>
+    <string name="greeting_morning">శుభోదయం! స్వాగతం</string>
+    <string name="greeting_afternoon">శుభ మధ్యాహ్నం! స్వాగతం</string>
+    <string name="greeting_evening">శుభ సాయంత్రం! స్వాగతం</string>
+    <string name="greeting_night">శుభ రాత్రి!</string>
+    <string name="pin_to_dock">డాక్‌కు పిన్ చేయండి</string>
+    <string name="remove_from_dock">డాక్ నుండి తీసివేయండి</string>
+    <string name="app_info">యాప్ సమాచారం</string>
+    <string name="pinned_to_dock">%1$s డాక్‌కు పిన్ చేయబడింది</string>
+    <string name="removed_from_dock">%1$s డాక్ నుండి తీసివేయబడింది</string>
+    <string name="move_left">ఎడమకు జరపండి</string>
+    <string name="move_right">కుడికి జరపండి</string>
+    <string name="hide_app">దాచు</string>
+    <string name="hidden_apps">దాచిన యాప్‌లు</string>
+    <string name="app_hidden">%1$s దాచబడింది</string>
+    <string name="app_shown">%1$s మళ్లీ చూపబడింది</string>
+</resources>

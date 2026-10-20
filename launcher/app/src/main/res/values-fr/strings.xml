@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">Entrées</string>
+    <string name="settings">Paramètres</string>
+    <string name="choose_input">Entrées</string>
+    <string name="connected">Connecté</string>
+    <string name="standby">En veille</string>
+    <string name="not_connected">Aucun appareil</string>
+    <string name="live_tv">TV en direct</string>
+    <string name="no_inputs">Aucune entrée trouvée</string>
+    <string name="offline">Hors ligne</string>
+    <string name="nlrc_tagline">Centre de divertissement</string>
+    <string name="greeting_morning">Bonjour ! Bienvenue</string>
+    <string name="greeting_afternoon">Bon après-midi ! Bienvenue</string>
+    <string name="greeting_evening">Bonsoir ! Bienvenue</string>
+    <string name="greeting_night">Bonne nuit !</string>
+    <string name="pin_to_dock">Épingler au dock</string>
+    <string name="remove_from_dock">Retirer du dock</string>
+    <string name="app_info">Infos sur l\'appli</string>
+    <string name="pinned_to_dock">%1$s épinglé au dock</string>
+    <string name="removed_from_dock">%1$s retiré du dock</string>
+    <string name="move_left">Déplacer à gauche</string>
+    <string name="move_right">Déplacer à droite</string>
+    <string name="hide_app">Masquer</string>
+    <string name="hidden_apps">Applis masquées</string>
+    <string name="app_hidden">%1$s masquée</string>
+    <string name="app_shown">%1$s de nouveau visible</string>
+</resources>

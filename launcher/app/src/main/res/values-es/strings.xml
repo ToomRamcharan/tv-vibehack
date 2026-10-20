@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inputs">Entradas</string>
+    <string name="settings">Ajustes</string>
+    <string name="choose_input">Entradas</string>
+    <string name="connected">Conectado</string>
+    <string name="standby">En espera</string>
+    <string name="not_connected">Sin dispositivo</string>
+    <string name="live_tv">TV en directo</string>
+    <string name="no_inputs">No se encontraron entradas</string>
+    <string name="offline">Sin conexión</string>
+    <string name="nlrc_tagline">Centro de Entretenimiento</string>
+    <string name="greeting_morning">¡Buenos días! Bienvenido</string>
+    <string name="greeting_afternoon">¡Buenas tardes! Bienvenido</string>
+    <string name="greeting_evening">¡Buenas noches! Bienvenido</string>
+    <string name="greeting_night">¡Buenas noches!</string>
+    <string name="pin_to_dock">Fijar en la barra</string>
+    <string name="remove_from_dock">Quitar de la barra</string>
+    <string name="app_info">Información de la app</string>
+    <string name="pinned_to_dock">%1$s fijado en la barra</string>
+    <string name="removed_from_dock">%1$s quitado de la barra</string>
+    <string name="move_left">Mover a la izquierda</string>
+    <string name="move_right">Mover a la derecha</string>
+    <string name="hide_app">Ocultar</string>
+    <string name="hidden_apps">Apps ocultas</string>
+    <string name="app_hidden">%1$s ocultada</string>
+    <string name="app_shown">%1$s visible de nuevo</string>
+</resources>
