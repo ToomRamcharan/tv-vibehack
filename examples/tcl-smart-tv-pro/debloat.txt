@@ -1,0 +1,32 @@
+# TCL Smart TV Pro
+# Platform: MediaTek MT9618 (tcl9618), Android 14 (API 34, Build UTT2.250416.001 AU02)
+#
+# IMPORTANT SAFETY NOTICE:
+# DO NOT DISABLE 'com.google.android.apps.tv.launcherx'.
+# On Android 14 Google TV, disabling the stock launcher triggers RescueParty during
+# Direct Boot (Credential Encrypted storage lock), resulting in a recovery boot loop.
+# tv-vibehack uses HomeKeyService (AccessibilityService) to intercept the Home button
+# and display the custom launcher safely without disabling the stock launcher.
+#
+# Live TV App: com.tcl.tvinput (Hardware Tuner: HW2)
+# HDMI Hardware Inputs:
+#   HDMI 1: com.tcl.tvinput/.TvPassThroughService/HW15
+#   HDMI 2: com.tcl.tvinput/.TvPassThroughService/HW16
+#   HDMI 3: com.tcl.tvinput/.TvPassThroughService/HW17
+#   HDMI 4: com.tcl.tvinput/.TvPassThroughService/HW18
+
+# TCL Channel / Content aggregation bloat
+com.tcl.waterfall.overseas        # TCL Channel overseas launcher feed & sponsored recommendations
+com.tcl.channelplus               # TCL Channel Plus streaming aggregator
+
+# Shop / Retail demo & electronic stickers
+com.tcl.exhibit                   # In-store demo / exhibit mode
+com.tcl.esticker                  # Electronic retail sticker overlay
+
+# TCL Support / Manuals / Floating overlay
+com.tcl.ocean.instructions        # Built-in electronic user manual
+com.tcl.suspension                # Floating quick-settings widget / overlay
+com.tcl.t_solo                    # TCL background diagnostics stub
+
+# Unused system stubs
+com.google.android.play.games     # Google Play Games stub
