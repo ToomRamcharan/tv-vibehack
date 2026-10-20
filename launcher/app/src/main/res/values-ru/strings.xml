@@ -25,4 +25,23 @@
     <string name="hidden_apps">Скрытые приложения</string>
     <string name="app_hidden">%1$s скрыто</string>
     <string name="app_shown">%1$s снова показано</string>
+    <string name="pd_tile">Ваши видео</string>
+    <string name="pd_subtitle">Видео на этом телевизоре и USB-накопителях</string>
+    <string name="pd_count">Видео: %1$d</string>
+    <string name="pd_none">Нет видео</string>
+    <string name="pd_empty">Видео не найдены.\nСкопируйте видео в папку Movies или подключите USB-накопитель.</string>
+    <string name="pd_permission">Разрешите доступ к хранилищу, чтобы показать видео</string>
+    <string name="pd_hint">[OK] Воспроизвести  ·  [◄ / ►] Выбрать  ·  [BACK] Выход</string>
+    <string name="pd_source_usb">USB-накопитель</string>
+    <string name="pd_source_tv">Память ТВ</string>
+    <string name="vp_switch_hint">[▲ / ▼] Назад / далее</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Пуск/Пауза  ·  [10s ►]  ·  [BACK] Выход</string>
+    <string name="vp_playing">▶ Воспроизведение</string>
+    <string name="vp_paused">⏸ Пауза</string>
+    <string name="vp_position">%1$d из %2$d</string>
+    <string name="vp_first">Это первое видео</string>
+    <string name="vp_last">Это последнее видео</string>
+    <string name="vp_finished">Все видео просмотрены</string>
+    <string name="vp_error">Не удаётся воспроизвести это видео</string>
+    <string name="vp_not_found">Видео не найдено</string>
 </resources>

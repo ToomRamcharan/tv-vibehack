@@ -33,4 +33,27 @@
     <string name="hidden_apps">Hidden apps</string>
     <string name="app_hidden">%1$s hidden</string>
     <string name="app_shown">%1$s shown again</string>
+
+    <!-- PenDrive viewer and video player -->
+    <string name="pd_tile">Your videos</string>
+    <string name="pd_subtitle">Videos on this TV and USB drives</string>
+    <string name="pd_count">Videos: %1$d</string>
+    <string name="pd_none">No videos</string>
+    <string name="pd_empty">No videos found.\nCopy videos to the Movies folder or plug in a USB drive.</string>
+    <string name="pd_permission">Allow storage access to show your videos</string>
+    <string name="pd_hint">[OK] Play  ·  [◄ / ►] Choose  ·  [BACK] Exit</string>
+    <string name="pd_source_usb">USB drive</string>
+    <string name="pd_source_tv">TV storage</string>
+    <string name="vp_switch_hint">[▲ / ▼] Previous / next</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Play/Pause  ·  [10s ►]  ·  [BACK] Exit</string>
+    <string name="vp_playing">▶ Playing</string>
+    <string name="vp_paused">⏸ Paused</string>
+    <string name="vp_position">%1$d of %2$d</string>
+    <string name="vp_first">This is the first video</string>
+    <string name="vp_last">This is the last video</string>
+    <string name="vp_finished">All videos finished</string>
+    <string name="vp_error">This video can\'t be played</string>
+    <string name="vp_not_found">Video not found</string>
+    <string name="vp_forward" translatable="false">⏩ +10 s</string>
+    <string name="vp_rewind" translatable="false">⏪ −10 s</string>
 </resources>

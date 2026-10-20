@@ -25,4 +25,23 @@
     <string name="hidden_apps">Apps ocultas</string>
     <string name="app_hidden">%1$s ocultada</string>
     <string name="app_shown">%1$s visible de nuevo</string>
+    <string name="pd_tile">Tus vídeos</string>
+    <string name="pd_subtitle">Vídeos en esta TV y en memorias USB</string>
+    <string name="pd_count">Vídeos: %1$d</string>
+    <string name="pd_none">Sin vídeos</string>
+    <string name="pd_empty">No se encontraron vídeos.\nCopia vídeos en la carpeta Movies o conecta una memoria USB.</string>
+    <string name="pd_permission">Permite el acceso al almacenamiento para mostrar tus vídeos</string>
+    <string name="pd_hint">[OK] Reproducir  ·  [◄ / ►] Elegir  ·  [BACK] Salir</string>
+    <string name="pd_source_usb">Memoria USB</string>
+    <string name="pd_source_tv">Memoria de la TV</string>
+    <string name="vp_switch_hint">[▲ / ▼] Anterior / siguiente</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Reproducir/Pausa  ·  [10s ►]  ·  [BACK] Salir</string>
+    <string name="vp_playing">▶ Reproduciendo</string>
+    <string name="vp_paused">⏸ En pausa</string>
+    <string name="vp_position">%1$d de %2$d</string>
+    <string name="vp_first">Este es el primer vídeo</string>
+    <string name="vp_last">Este es el último vídeo</string>
+    <string name="vp_finished">Todos los vídeos han terminado</string>
+    <string name="vp_error">No se puede reproducir este vídeo</string>
+    <string name="vp_not_found">Vídeo no encontrado</string>
 </resources>

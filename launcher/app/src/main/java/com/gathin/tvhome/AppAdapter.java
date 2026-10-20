@@ -293,40 +293,23 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
      * Creates a sleek card banner for PenDrive / Local Media Viewer.
      */
     private static Drawable createMediaTileBanner(Context ctx) {
-        try {
-            Drawable customBanner = ctx.getDrawable(R.drawable.banner_pendrive_viewer);
-            if (customBanner != null) return customBanner;
-        } catch (Exception ignored) {}
-
         float d = ctx.getResources().getDisplayMetrics().density;
         int w = (int) (180 * d);
         int h = (int) (101 * d);
         Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(bmp);
 
-        // 1. Draw base dark gradient card background
         Paint pBg = new Paint(Paint.ANTI_ALIAS_FLAG);
         pBg.setShader(new LinearGradient(0, 0, w, h, 0xFF2A1B08, 0xFF0E1626, Shader.TileMode.CLAMP));
         c.drawRect(0, 0, w, h, pBg);
 
-        // 2. Heavy dark gradient scrim on bottom for readability
-        Paint pScrim = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pScrim.setShader(new LinearGradient(0, h * 0.35f, 0, h, 0x00000000, 0xF0000000, Shader.TileMode.CLAMP));
-        c.drawRect(0, h * 0.35f, w, h, pScrim);
+        Drawable logo = ctx.getDrawable(R.drawable.logo_pendrive_viewer);
+        if (logo != null) {
+            int s = (int) (34 * d), m = (int) (12 * d);
+            logo.setBounds(m, m, m + s, m + s);
+            logo.draw(c);
+        }
 
-        // 3. Gold Pill Badge in Top-Right
-        Paint pBadge = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pBadge.setColor(0xEEB8860B);
-        RectF rBadge = new RectF(w - (68 * d), 10 * d, w - (12 * d), 26 * d);
-        c.drawRoundRect(rBadge, 8 * d, 8 * d, pBadge);
-
-        Paint pBadgeText = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pBadgeText.setColor(Color.WHITE);
-        pBadgeText.setTextSize(9f * d);
-        pBadgeText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-        c.drawText("3 Parts", w - (62 * d), 21 * d, pBadgeText);
-
-        // 4. Main Title
         Paint pTitle = new Paint(Paint.ANTI_ALIAS_FLAG);
         pTitle.setColor(Color.WHITE);
         pTitle.setTextSize(15f * d);
@@ -334,13 +317,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         pTitle.setShadowLayer(4f * d, 0, 2f * d, 0xDD000000);
         c.drawText("PenDrive Viewer", 14 * d, h - (26 * d), pTitle);
 
-        // 5. Subtitle (Telugu)
         Paint pSub = new Paint(Paint.ANTI_ALIAS_FLAG);
-        pSub.setColor(0xFFFFD700); // Bright gold
+        pSub.setColor(0xFFFFD700);
         pSub.setTextSize(11f * d);
         pSub.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         pSub.setShadowLayer(3f * d, 0, 1f * d, 0xDD000000);
-        c.drawText("Personal Videos · Part 1, 2, 3", 14 * d, h - (10 * d), pSub);
+        c.drawText(ctx.getString(R.string.pd_tile), 14 * d, h - (10 * d), pSub);
 
         return new BitmapDrawable(ctx.getResources(), bmp);
     }

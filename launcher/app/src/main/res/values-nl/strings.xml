@@ -25,4 +25,23 @@
     <string name="hidden_apps">Verborgen apps</string>
     <string name="app_hidden">%1$s verborgen</string>
     <string name="app_shown">%1$s weer zichtbaar</string>
+    <string name="pd_tile">Je video\'s</string>
+    <string name="pd_subtitle">Video\'s op deze tv en USB-sticks</string>
+    <string name="pd_count">Video\'s: %1$d</string>
+    <string name="pd_none">Geen video\'s</string>
+    <string name="pd_empty">Geen video\'s gevonden.\nKopieer video\'s naar de map Movies of sluit een USB-stick aan.</string>
+    <string name="pd_permission">Sta toegang tot opslag toe om je video\'s te tonen</string>
+    <string name="pd_hint">[OK] Afspelen  ·  [◄ / ►] Kiezen  ·  [BACK] Afsluiten</string>
+    <string name="pd_source_usb">USB-stick</string>
+    <string name="pd_source_tv">Tv-opslag</string>
+    <string name="vp_switch_hint">[▲ / ▼] Vorige / volgende</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Afspelen/Pauze  ·  [10s ►]  ·  [BACK] Afsluiten</string>
+    <string name="vp_playing">▶ Afspelen</string>
+    <string name="vp_paused">⏸ Gepauzeerd</string>
+    <string name="vp_position">%1$d van %2$d</string>
+    <string name="vp_first">Dit is de eerste video</string>
+    <string name="vp_last">Dit is de laatste video</string>
+    <string name="vp_finished">Alle video\'s zijn afgelopen</string>
+    <string name="vp_error">Deze video kan niet worden afgespeeld</string>
+    <string name="vp_not_found">Video niet gevonden</string>
 </resources>

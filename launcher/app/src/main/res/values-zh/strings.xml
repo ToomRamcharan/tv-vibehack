@@ -25,4 +25,23 @@
     <string name="hidden_apps">已隐藏的应用</string>
     <string name="app_hidden">已隐藏%1$s</string>
     <string name="app_shown">已重新显示%1$s</string>
+    <string name="pd_tile">我的视频</string>
+    <string name="pd_subtitle">本电视和U盘中的视频</string>
+    <string name="pd_count">视频：%1$d</string>
+    <string name="pd_none">没有视频</string>
+    <string name="pd_empty">未找到视频。\n请将视频复制到 Movies 文件夹，或插入U盘。</string>
+    <string name="pd_permission">请允许访问存储以显示您的视频</string>
+    <string name="pd_hint">[OK] 播放  ·  [◄ / ►] 选择  ·  [BACK] 退出</string>
+    <string name="pd_source_usb">U盘</string>
+    <string name="pd_source_tv">电视存储</string>
+    <string name="vp_switch_hint">[▲ / ▼] 上一个 / 下一个</string>
+    <string name="vp_controls_hint">[◄ 10秒]  ·  [OK] 播放/暂停  ·  [10秒 ►]  ·  [BACK] 退出</string>
+    <string name="vp_playing">▶ 播放中</string>
+    <string name="vp_paused">⏸ 已暂停</string>
+    <string name="vp_position">第 %1$d 个，共 %2$d 个</string>
+    <string name="vp_first">已经是第一个视频</string>
+    <string name="vp_last">已经是最后一个视频</string>
+    <string name="vp_finished">所有视频已播放完毕</string>
+    <string name="vp_error">无法播放此视频</string>
+    <string name="vp_not_found">未找到视频</string>
 </resources>

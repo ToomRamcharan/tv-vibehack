@@ -10,14 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_home"
-        android:alpha="0.22" />
+        android:src="@drawable/bg_home" />
 
     <!-- 2. Dark vignette gradient -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#DD07090E" />
+        android:background="#5907090E" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,259 +47,87 @@
                 android:orientation="vertical">
 
                 <TextView
+    android:fontFamily="@font/outfit"
                     android:id="@+id/tvHeaderTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="NLRC PenDrive Viewer"
                     android:textColor="#FFFFFF"
                     android:textSize="28sp"
-                    android:textStyle="bold"
+                    android:fontVariationSettings="'wght' 700"
+    android:textStyle="bold"
                     android:shadowColor="#80000000"
                     android:shadowRadius="6" />
 
                 <TextView
+    android:fontFamily="@font/outfit"
                     android:id="@+id/tvHeaderSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Personal Media Archive · 3 Complete Parts"
-                    android:textColor="#FFD700"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:text="@string/pd_subtitle"
+                    android:textColor="#FFF59D"
+                    android:textSize="17sp"
+                    android:fontVariationSettings="'wght' 700"
+    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Storage Status Pill -->
             <TextView
+    android:fontFamily="@font/outfit"
                 android:id="@+id/tvUsbStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_festival_pill"
+                android:background="@drawable/bg_glass_pill"
                 android:paddingStart="18dp"
                 android:paddingEnd="18dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                android:text="Checking TV Storage..."
+                android:text=""
                 android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:fontVariationSettings="'wght' 700"
+    android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Video Cards Row -->
-        <LinearLayout
-            android:id="@+id/cardsContainer"
+        <!-- Videos found on TV storage and USB drives (filled by PenDriveActivity) -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:baselineAligned="false"
-            android:paddingTop="18dp"
-            android:paddingBottom="18dp">
+            android:layout_weight="1">
 
-            <!-- Card 1: Part 1 -->
-            <FrameLayout
-                android:id="@+id/cardPart1"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="18dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@drawable/bg_media_card">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/videoList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
 
-                <ImageView
-                    android:id="@+id/imgThumb1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/bg_thumb_card" />
+            <TextView
+    android:fontFamily="@font/outfit"
+                android:id="@+id/emptyText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:lineSpacingExtra="6dp"
+                android:textColor="#E2E8F0"
+                android:textSize="22sp"
+                android:visibility="gone" />
+        </FrameLayout>
 
-                <!-- Bottom Gradient Scrim -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/bg_card_bottom_scrim" />
-
-                <!-- Tag Top Right -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:layout_margin="12dp"
-                    android:background="#CCB8860B"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="PART 1"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Media Archive · Part 1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvDuration1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Ceremony &amp; Highlights · 24 mins"
-                        android:textColor="#E2E8F0"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- Card 2: Part 2 -->
-            <FrameLayout
-                android:id="@+id/cardPart2"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:layout_marginEnd="18dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@drawable/bg_media_card">
-
-                <ImageView
-                    android:id="@+id/imgThumb2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/bg_thumb_card" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/bg_card_bottom_scrim" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:layout_margin="12dp"
-                    android:background="#CCB8860B"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="PART 2"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Media Archive · Part 2"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvDuration2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Main Gathering &amp; Events · 40 mins"
-                        android:textColor="#E2E8F0"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- Card 3: Part 3 -->
-            <FrameLayout
-                android:id="@+id/cardPart3"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="@drawable/bg_media_card">
-
-                <ImageView
-                    android:id="@+id/imgThumb3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/bg_thumb_card" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="120dp"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/bg_card_bottom_scrim" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|end"
-                    android:layout_margin="12dp"
-                    android:background="#CCB8860B"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="PART 3"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Media Archive · Part 3"
-                        android:textColor="#FFFFFF"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvDuration3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Celebrations &amp; Memories · 42 mins"
-                        android:textColor="#E2E8F0"
-                        android:textSize="12sp" />
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-
-        <!-- Bottom Remote Navigation Guide in English -->
         <TextView
+    android:fontFamily="@font/outfit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="🔘 Remote: [OK] Play Video  ·  [◄ / ►] Select Part  ·  [▲ / ▼ or CH+/CH-] Switch Part  ·  [BACK] Exit"
-            android:textColor="#94A3B8"
-            android:textSize="13sp" />
+            android:text="@string/pd_hint"
+            android:textColor="#E2E8F0"
+            android:textSize="16sp" />
     </LinearLayout>
 </FrameLayout>

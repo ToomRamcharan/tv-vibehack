@@ -25,4 +25,23 @@
     <string name="hidden_apps">Ausgeblendete Apps</string>
     <string name="app_hidden">%1$s ausgeblendet</string>
     <string name="app_shown">%1$s wieder eingeblendet</string>
+    <string name="pd_tile">Deine Videos</string>
+    <string name="pd_subtitle">Videos auf diesem TV und USB-Sticks</string>
+    <string name="pd_count">Videos: %1$d</string>
+    <string name="pd_none">Keine Videos</string>
+    <string name="pd_empty">Keine Videos gefunden.\nKopiere Videos in den Ordner Movies oder stecke einen USB-Stick ein.</string>
+    <string name="pd_permission">Erlaube den Speicherzugriff, um deine Videos anzuzeigen</string>
+    <string name="pd_hint">[OK] Abspielen  ·  [◄ / ►] Auswählen  ·  [BACK] Beenden</string>
+    <string name="pd_source_usb">USB-Stick</string>
+    <string name="pd_source_tv">TV-Speicher</string>
+    <string name="vp_switch_hint">[▲ / ▼] Zurück / weiter</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Abspielen/Pause  ·  [10s ►]  ·  [BACK] Beenden</string>
+    <string name="vp_playing">▶ Wiedergabe</string>
+    <string name="vp_paused">⏸ Pausiert</string>
+    <string name="vp_position">%1$d von %2$d</string>
+    <string name="vp_first">Das ist das erste Video</string>
+    <string name="vp_last">Das ist das letzte Video</string>
+    <string name="vp_finished">Alle Videos sind fertig</string>
+    <string name="vp_error">Dieses Video kann nicht abgespielt werden</string>
+    <string name="vp_not_found">Video nicht gefunden</string>
 </resources>

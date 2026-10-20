@@ -25,4 +25,23 @@
     <string name="hidden_apps">Applis masquées</string>
     <string name="app_hidden">%1$s masquée</string>
     <string name="app_shown">%1$s de nouveau visible</string>
+    <string name="pd_tile">Vos vidéos</string>
+    <string name="pd_subtitle">Vidéos sur cette TV et les clés USB</string>
+    <string name="pd_count">Vidéos : %1$d</string>
+    <string name="pd_none">Aucune vidéo</string>
+    <string name="pd_empty">Aucune vidéo trouvée.\nCopiez des vidéos dans le dossier Movies ou branchez une clé USB.</string>
+    <string name="pd_permission">Autorisez l\'accès au stockage pour afficher vos vidéos</string>
+    <string name="pd_hint">[OK] Lire  ·  [◄ / ►] Choisir  ·  [BACK] Quitter</string>
+    <string name="pd_source_usb">Clé USB</string>
+    <string name="pd_source_tv">Stockage de la TV</string>
+    <string name="vp_switch_hint">[▲ / ▼] Précédente / suivante</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Lecture/Pause  ·  [10s ►]  ·  [BACK] Quitter</string>
+    <string name="vp_playing">▶ Lecture</string>
+    <string name="vp_paused">⏸ En pause</string>
+    <string name="vp_position">%1$d sur %2$d</string>
+    <string name="vp_first">C\'est la première vidéo</string>
+    <string name="vp_last">C\'est la dernière vidéo</string>
+    <string name="vp_finished">Toutes les vidéos sont terminées</string>
+    <string name="vp_error">Impossible de lire cette vidéo</string>
+    <string name="vp_not_found">Vidéo introuvable</string>
 </resources>
