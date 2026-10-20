@@ -2,9 +2,7 @@
 <resources>
     <string name="inputs">Eingänge</string>
     <string name="settings">Einstellungen</string>
-    <string name="choose_input">Eingänge</string>
     <string name="connected">Verbunden</string>
-    <string name="standby">Standby</string>
     <string name="not_connected">Kein Gerät</string>
     <string name="live_tv">Live-TV</string>
     <string name="no_inputs">Keine Eingänge gefunden</string>
@@ -45,4 +43,11 @@
     <string name="vp_error">Dieses Video kann nicht abgespielt werden</string>
     <string name="vp_not_found">Video nicht gefunden</string>
     <string name="more_apps">▼  Alle Apps</string>
+    <string name="av_input">AV-Eingang</string>
+    <string name="set_top_box">Set-Top-Box</string>
+    <string name="composite">Composite</string>
+    <string name="cant_open">%1$s kann nicht geöffnet werden</string>
+    <string name="not_available">Auf diesem TV nicht verfügbar</string>
+    <string name="hdmi_switching">Wechsel zu HDMI 2… 📺</string>
+    <string name="hdmi_failed">HDMI 2 kann nicht geöffnet werden</string>
 </resources>

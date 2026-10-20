@@ -2,9 +2,7 @@
 <resources>
     <string name="inputs">ఇన్‌పుట్‌లు</string>
     <string name="settings">సెట్టింగ్‌లు</string>
-    <string name="choose_input">ఇన్‌పుట్‌లు</string>
     <string name="connected">కనెక్ట్ అయింది</string>
-    <string name="standby">స్టాండ్‌బై</string>
     <string name="not_connected">పరికరం లేదు</string>
     <string name="live_tv">లైవ్ టీవీ</string>
     <string name="no_inputs">ఇన్‌పుట్‌లు కనుగొనబడలేదు</string>
@@ -45,4 +43,11 @@
     <string name="vp_error">ఈ వీడియోను ప్లే చేయలేము</string>
     <string name="vp_not_found">వీడియో కనుగొనబడలేదు</string>
     <string name="more_apps">▼  అన్ని యాప్‌లు</string>
+    <string name="av_input">AV ఇన్‌పుట్</string>
+    <string name="set_top_box">సెట్-టాప్ బాక్స్</string>
+    <string name="composite">కాంపోజిట్</string>
+    <string name="cant_open">%1$s తెరవలేము</string>
+    <string name="not_available">ఈ టీవీలో అందుబాటులో లేదు</string>
+    <string name="hdmi_switching">HDMI 2 కి మారుతోంది… 📺</string>
+    <string name="hdmi_failed">HDMI 2 తెరవలేము</string>
 </resources>

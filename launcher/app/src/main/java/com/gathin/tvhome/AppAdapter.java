@@ -15,7 +15,6 @@ import android.graphics.LinearGradient;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -101,6 +100,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private static final String KEY_DOCK = "dock_apps";
     private static final String KEY_HIDDEN = "hidden_apps";
 
+    private final SharedPreferences prefs;
     private final List<String> favourites = new ArrayList<>();
     private final Set<String>  hidden;
     private final List<Entry>  items = new ArrayList<>();
@@ -114,11 +114,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         this.listener   = listener;
         this.dockSize   = dockSize;
         // Device-protected storage: the launcher is directBootAware and may start before unlock.
-        String saved = prefs().getString(KEY_DOCK, null);
+        this.prefs      = ctx.createDeviceProtectedStorageContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String saved = prefs.getString(KEY_DOCK, null);
         favourites.addAll(saved != null
                 ? Arrays.asList(TextUtils.split(saved, ","))
                 : Arrays.asList(ctx.getResources().getStringArray(R.array.dock_apps)));
-        userHidden.addAll(prefs().getStringSet(KEY_HIDDEN, Collections.emptySet()));
+        userHidden.addAll(prefs.getStringSet(KEY_HIDDEN, Collections.emptySet()));
         this.hidden     = new HashSet<>(Arrays.asList(ctx.getResources().getStringArray(R.array.hidden_apps)));
     }
 
@@ -144,19 +145,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         // ── 2. TV Inputs (HDMI 1 / Jio TV, HDMI 2, AV) ──────────────────────
         TvInputManager tim = (TvInputManager) ctx.getSystemService(Context.TV_INPUT_SERVICE);
         if (tim != null) {
-            List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
-            // Sort: HDMI first, then others
-            Collections.sort(inputs, (a, b) -> {
-                boolean ha = a.getType() == TvInputInfo.TYPE_HDMI;
-                boolean hb = b.getType() == TvInputInfo.TYPE_HDMI;
-                if (ha != hb) return ha ? -1 : 1;
-                return String.valueOf(a.loadLabel(ctx))
-                             .compareToIgnoreCase(String.valueOf(b.loadLabel(ctx)));
-            });
-
             int hdmiIdx = 1;
-            for (TvInputInfo info : inputs) {
-                if (!info.isPassthroughInput()) continue;
+            for (TvInputInfo info : HdmiHelper.passthroughInputs(ctx)) {
                 boolean isHdmi = info.getType() == TvInputInfo.TYPE_HDMI;
                 int state = tim.getInputState(info.getId());
                 boolean isConnected = (state == TvInputManager.INPUT_STATE_CONNECTED);
@@ -179,14 +169,14 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     if (hdmiIdx == 2) {
                         // Slot 0 in dock: HDMI 2 with connected Jio TV Set Top Box
                         String title    = "HDMI 2";
-                        String sub      = isConnected ? "Jio TV" : "Set Top Box";
+                        String sub      = isConnected ? "Jio TV" : ctx.getString(R.string.set_top_box);
                         String fullLabel = "HDMI 2 · Jio TV";
                         Drawable banner = createHdmiBanner(ctx, title, sub, isConnected, 0xFF0D1B2A, 0xFF1B263B);
                         fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF0077EE));
                     } else {
                         // HDMI 1 (or other HDMI)
                         String title    = "HDMI " + hdmiIdx;
-                        String sub      = isConnected ? "Connected" : "No Device";
+                        String sub      = ctx.getString(isConnected ? R.string.connected : R.string.not_connected);
                         String fullLabel = "HDMI " + hdmiIdx;
                         Drawable banner = createHdmiBanner(ctx, title, sub, isConnected, 0xFF141414, 0xFF222222);
                         fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF555555));
@@ -194,8 +184,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     hdmiIdx++;
                 } else {
                     // AV Input
-                    String fullLabel = "AV Input";
-                    Drawable banner = createHdmiBanner(ctx, "AV", isConnected ? "Connected" : "Composite", isConnected, 0xFF141414, 0xFF222222);
+                    String fullLabel = ctx.getString(R.string.av_input);
+                    Drawable banner = createHdmiBanner(ctx, "AV",
+                            ctx.getString(isConnected ? R.string.connected : R.string.composite), isConnected, 0xFF141414, 0xFF222222);
                     fresh.add(new Entry(fullLabel, "av_input", banner, fallbackIcon, switchIntent, 0xFF555555));
                 }
             }
@@ -211,7 +202,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             fallbackPlayIcon = null;
         }
         Drawable mediaBanner = createMediaTileBanner(ctx);
-        fresh.add(new Entry("NLRC PenDrive Viewer", "nlrc_pendrive",
+        fresh.add(new Entry(ctx.getString(R.string.pd_title), "nlrc_pendrive",
                 mediaBanner, fallbackPlayIcon, penDriveIntent, 0xFFFFB300));
 
         // ── 3. Sort: dock favourites first, in saved order; the rest alphabetically ─
@@ -315,7 +306,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         pTitle.setTextSize(15f * d);
         pTitle.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         pTitle.setShadowLayer(4f * d, 0, 2f * d, 0xDD000000);
-        c.drawText("PenDrive Viewer", 14 * d, h - (26 * d), pTitle);
+        c.drawText(ctx.getString(R.string.pd_title_short), 14 * d, h - (26 * d), pTitle);
 
         Paint pSub = new Paint(Paint.ANTI_ALIAS_FLAG);
         pSub.setColor(0xFFFFD700);
@@ -365,10 +356,6 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         });
     }
 
-    private SharedPreferences prefs() {
-        return ctx.createDeviceProtectedStorageContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-    }
-
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView rv) { recycler = rv; }
 
@@ -411,7 +398,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     /** Removes the tile from the screen (and the dock); it can be shown again from "Hidden apps". */
     private void hide(Entry e, boolean inDock, int position) {
         userHidden.add(e.pkg);
-        prefs().edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
+        prefs.edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
         if (inDock) {
             List<String> dock = dockPackages();
             dock.remove(e.pkg);
@@ -433,7 +420,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 .setItems(names, (d, which) -> {
                     Entry e = snapshot.get(which);
                     userHidden.remove(e.pkg);
-                    prefs().edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
+                    prefs.edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
                     reload();
                     focusAt(position);
                     Toast.makeText(ctx, ctx.getString(R.string.app_shown, e.label), Toast.LENGTH_SHORT).show();
@@ -490,7 +477,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private void saveDock(List<String> dock) {
         favourites.clear();
         favourites.addAll(dock);
-        prefs().edit().putString(KEY_DOCK, TextUtils.join(",", dock)).apply();
+        prefs.edit().putString(KEY_DOCK, TextUtils.join(",", dock)).apply();
         reload();
     }
 
@@ -514,7 +501,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 ctx.startActivity(i);
             }
         } catch (Exception ex) {
-            Toast.makeText(ctx, "Can't open " + e.label, Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -601,6 +588,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
                     // Holding OK repeats key-down; open the tile menu once and swallow the release
                     // so it doesn't also launch the app.
+                    // The release after a hold goes to the menu dialog, so reset on every fresh press.
+                    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) held = false;
                     if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 0) {
                         if (!held) { held = true; view.performLongClick(); }
                         return true;

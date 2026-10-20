@@ -2,9 +2,7 @@
 <resources>
     <string name="inputs">信号源</string>
     <string name="settings">设置</string>
-    <string name="choose_input">信号源</string>
     <string name="connected">已连接</string>
-    <string name="standby">待机</string>
     <string name="not_connected">无设备</string>
     <string name="live_tv">电视直播</string>
     <string name="no_inputs">未找到信号源</string>
@@ -45,4 +43,11 @@
     <string name="vp_error">无法播放此视频</string>
     <string name="vp_not_found">未找到视频</string>
     <string name="more_apps">▼  全部应用</string>
+    <string name="av_input">AV 输入</string>
+    <string name="set_top_box">机顶盒</string>
+    <string name="composite">复合视频</string>
+    <string name="cant_open">无法打开%1$s</string>
+    <string name="not_available">此电视不支持</string>
+    <string name="hdmi_switching">正在切换到 HDMI 2… 📺</string>
+    <string name="hdmi_failed">无法打开 HDMI 2</string>
 </resources>

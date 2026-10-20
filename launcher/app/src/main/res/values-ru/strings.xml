@@ -2,9 +2,7 @@
 <resources>
     <string name="inputs">Входы</string>
     <string name="settings">Настройки</string>
-    <string name="choose_input">Входы</string>
     <string name="connected">Подключено</string>
-    <string name="standby">Ожидание</string>
     <string name="not_connected">Нет устройства</string>
     <string name="live_tv">ТВ-эфир</string>
     <string name="no_inputs">Входы не найдены</string>
@@ -45,4 +43,11 @@
     <string name="vp_error">Не удаётся воспроизвести это видео</string>
     <string name="vp_not_found">Видео не найдено</string>
     <string name="more_apps">▼  Все приложения</string>
+    <string name="av_input">Вход AV</string>
+    <string name="set_top_box">Приставка</string>
+    <string name="composite">Композитный</string>
+    <string name="cant_open">Не удаётся открыть %1$s</string>
+    <string name="not_available">Недоступно на этом телевизоре</string>
+    <string name="hdmi_switching">Переключение на HDMI 2… 📺</string>
+    <string name="hdmi_failed">Не удаётся открыть HDMI 2</string>
 </resources>

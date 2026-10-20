@@ -51,7 +51,7 @@
                     android:id="@+id/tvHeaderTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="NLRC PenDrive Viewer"
+                    android:text="@string/pd_title"
                     android:textColor="#FFFFFF"
                     android:textSize="28sp"
                     android:fontVariationSettings="'wght' 700"

@@ -2,9 +2,7 @@
 <resources>
     <string name="inputs">इनपुट</string>
     <string name="settings">सेटिंग्स</string>
-    <string name="choose_input">इनपुट</string>
     <string name="connected">कनेक्टेड</string>
-    <string name="standby">स्टैंडबाय</string>
     <string name="not_connected">कोई डिवाइस नहीं</string>
     <string name="live_tv">लाइव टीवी</string>
     <string name="no_inputs">कोई इनपुट नहीं मिला</string>
@@ -45,4 +43,11 @@
     <string name="vp_error">यह वीडियो नहीं चल सकता</string>
     <string name="vp_not_found">वीडियो नहीं मिला</string>
     <string name="more_apps">▼  सभी ऐप</string>
+    <string name="av_input">AV इनपुट</string>
+    <string name="set_top_box">सेट-टॉप बॉक्स</string>
+    <string name="composite">कम्पोज़िट</string>
+    <string name="cant_open">%1$s नहीं खुल सका</string>
+    <string name="not_available">इस टीवी पर उपलब्ध नहीं</string>
+    <string name="hdmi_switching">HDMI 2 पर स्विच हो रहा है… 📺</string>
+    <string name="hdmi_failed">HDMI 2 नहीं खुल सका</string>
 </resources>

@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.LruCache;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -50,13 +52,19 @@ public class PenDriveActivity extends Activity {
     private final ExecutorService worker = Executors.newSingleThreadExecutor();
     private final Handler main = new Handler(Looper.getMainLooper());
     private final List<File> videos = new ArrayList<>();
-    private final Map<String, Bitmap> thumbs = new HashMap<>();
+    /** Thumbnails capped by memory (~0.75 MB each) for 1 GB TVs; evicted ones are simply read again. */
+    private final LruCache<String, Bitmap> thumbs = new LruCache<String, Bitmap>(16 * 1024 * 1024) {
+        @Override protected int sizeOf(String key, Bitmap value) { return value.getByteCount(); }
+    };
     private final Map<String, String> durations = new HashMap<>();
+    private final Set<String> noThumb = new HashSet<>();
+    private final Set<String> loading = new HashSet<>();
 
     private RecyclerView list;
     private TextView status;
     private TextView empty;
     private VideoAdapter adapter;
+    private boolean permissionAsked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,14 +87,12 @@ public class PenDriveActivity extends Activity {
             scan();
         } else {
             showEmpty(R.string.pd_permission);
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQ_STORAGE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] results) {
-        if (requestCode == REQ_STORAGE && results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
-            scan();
+            // Ask once per visit: onResume runs again when the dialog closes, which would re-ask after "Deny".
+            // After "Allow" that same onResume does the scan.
+            if (!permissionAsked) {
+                permissionAsked = true;
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQ_STORAGE);
+            }
         }
     }
 
@@ -153,7 +159,7 @@ public class PenDriveActivity extends Activity {
         File[] mounts = new File("/storage").listFiles();
         if (mounts != null) {
             for (File m : mounts) {
-                if (!m.isDirectory() || m.getName().equals("self") || m.getName().equals("emulated")) continue;
+                if (!m.isDirectory() || !isOnUsb(m)) continue;
                 dirs.add(m);
                 dirs.add(new File(m, "Movies"));
             }
@@ -168,6 +174,7 @@ public class PenDriveActivity extends Activity {
         return false;
     }
 
+    /** True for paths on a removable drive (/storage/XXXX-XXXX), not internal storage. */
     private static boolean isOnUsb(File f) {
         String p = f.getAbsolutePath();
         return p.startsWith("/storage/") && !p.startsWith("/storage/emulated") && !p.startsWith("/storage/self");
@@ -241,14 +248,17 @@ public class PenDriveActivity extends Activity {
             String path = f.getAbsolutePath();
             h.path = path;
             h.title.setText(displayName(f));
-            bindDetails(h, f, thumbs.get(path), durations.get(path));
-            if (durations.containsKey(path)) return;
+            Bitmap cached = thumbs.get(path);
+            bindDetails(h, f, cached, durations.get(path));
+            boolean done = durations.containsKey(path) && (cached != null || noThumb.contains(path));
+            if (done || !loading.add(path)) return;
             // Thumbnail and duration are slow to read (USB especially), so load them off the main thread.
             worker.execute(() -> {
                 Bitmap bmp = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
                 String dur = readDuration(path);
                 main.post(() -> {
-                    thumbs.put(path, bmp);
+                    loading.remove(path);
+                    if (bmp != null) thumbs.put(path, bmp); else noThumb.add(path);
                     durations.put(path, dur);
                     if (path.equals(h.path)) bindDetails(h, f, bmp, dur);
                 });

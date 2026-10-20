@@ -1,12 +1,9 @@
 package com.gathin.tvhome;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -26,8 +23,6 @@ import java.util.Locale;
  * Plays the list handed over by {@link PenDriveActivity}; Up/Down or CH+/CH- step between videos.
  */
 public class VideoPlayerActivity extends Activity {
-
-    private static final String TAG = "VideoPlayerActivity";
 
     private VideoView videoView;
     private ProgressBar loadingSpinner;
@@ -89,7 +84,7 @@ public class VideoPlayerActivity extends Activity {
             videoView.start();
             showCenterToast(getString(R.string.vp_playing));
             scheduleHideHud();
-            handler.post(progressUpdateRunnable);
+            startProgressUpdates();
         });
 
         videoView.setOnCompletionListener(mp -> {
@@ -237,6 +232,18 @@ public class VideoPlayerActivity extends Activity {
     private void scheduleHideHud() {
         handler.removeCallbacks(hideHudRunnable);
         handler.postDelayed(hideHudRunnable, 3500);
+    }
+
+    /** One self-reposting updater at a time; posting again would stack a second loop. */
+    private void startProgressUpdates() {
+        handler.removeCallbacks(progressUpdateRunnable);
+        handler.post(progressUpdateRunnable);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startProgressUpdates();   // onPause stopped it; the loop only updates while playing
     }
 
     @Override
