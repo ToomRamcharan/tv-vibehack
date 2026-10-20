@@ -25,6 +25,18 @@
 
 ---
 
+## 🖼️ Preview
+
+| Home screen | PenDrive Viewer |
+|---|---|
+| ![Home screen with dock and All apps hint](docs/preview/home.png) | ![PenDrive Viewer listing videos](docs/preview/pendrive.png) |
+| **Dock menu (hold OK)** | **Video player** |
+| ![Tile menu with pin, move and hide](docs/preview/dock-menu.png) | ![Player with seek bar and remote hints](docs/preview/player.png) |
+
+▶️ [30-second demo video](docs/preview/demo.mp4): moving around the dock, opening All apps, and the hold-OK tile menu. Captured on a Xiaomi Mi Box 3, Android 9.
+
+---
+
 ## 🎯 The Motivation
 
 Modern Smart TVs ship with:
@@ -59,26 +71,39 @@ context.startActivity(new Intent(Intent.ACTION_VIEW, uri));
 ### 3. 🎮 Sponsored Remote Key Remapping (No Root)
 `HomeKeyService` intercepts hardcoded hardware remote buttons (`KEYCODE_BUTTON_3` for Netflix, `KEYCODE_BUTTON_4` for Prime Video, `KEYCODE_PROG_RED`/`GREEN`) and redirects them straight to HDMI 2 / Set-Top Box in <150ms without root.
 
-### 4. 🎞️ Offline TV Media Vault & Legacy Transcoding
-Many families have legacy home videos or recordings stored on USB drives encoded in older formats (e.g., DVD MPEG-2) that native modern Smart TV chipsets cannot decode inside standard MP4 containers.
+The redirect only runs on TVs that actually have that HDMI 2 input (`HdmiHelper.isAvailable()`). Everywhere else, Netflix and Prime Video open normally.
+
+### 4. 🎞️ PenDrive Viewer (Your Own Videos)
+Lists every video it finds on the TV and on plugged-in USB drives, with a real thumbnail, name, duration and source. There's no fixed number of "parts": add or remove files and the list follows.
+
+It looks in `Movies/`, `Download/` and `Movies/NLRC/` on TV storage, plus the top level and `Movies/` of each USB drive. The first time you open it, allow storage access.
 
 #### How to Add Your Own Media:
-1. **Transcode to Hardware-Accelerated H.264:**
+1. **Transcode old formats (e.g. DVD MPEG-2) to H.264**, which every TV chipset decodes:
    ```bash
-   ffmpeg -i "MyVideo_Part_1.mp4" -c:v libx264 -preset faster -crf 23 -c:a aac -b:a 192k "Part_1.mp4"
+   ffmpeg -i "Holiday.vob" -c:v libx264 -preset faster -crf 23 -c:a aac -b:a 192k "Family_Holiday_2019.mp4"
    ```
-2. **Push Directly into TV Internal Storage:**
+   The file name becomes the title: `Family_Holiday_2019.mp4` shows as "Family Holiday 2019".
+2. **Copy it to the TV**, or just copy it onto a USB stick and plug it in:
    ```bash
-   adb shell mkdir -p /sdcard/Movies/NLRC
-   adb push Part_1.mp4 /sdcard/Movies/NLRC/Part_1.mp4
-   adb push Part_2.mp4 /sdcard/Movies/NLRC/Part_2.mp4
-   adb push Part_3.mp4 /sdcard/Movies/NLRC/Part_3.mp4
+   adb push Family_Holiday_2019.mp4 /sdcard/Movies/
    ```
-3. **Instant D-pad Remote Navigation:**
-   Launch **PenDrive / Media Viewer** directly from the dock. No USB stick needs to remain plugged in; videos play natively at 60fps with intuitive remote controls:
-   - ◄ / ►: Seek -10s / +10s with real-time HUD.
-   - ▲ / ▼ or CH+ / CH-: Switch to Next / Previous part.
-   - OK: Play / Pause toggle.
+3. **Play from the remote:**
+   - OK: Play / Pause.
+   - ◄ / ►: Seek -10s / +10s.
+   - ▲ / ▼ or CH+ / CH-: Previous / next video. Playback continues to the next video on its own.
+
+### 5. 📌 Dock You Edit From the Remote
+Hold **OK** on any tile for a menu:
+- **Pin to dock** / **Remove from dock**.
+- **Move left** / **Move right** to reorder the dock.
+- **Hide**, and **Hidden apps** to bring them back.
+- **App info**.
+
+Choices are saved on the TV and survive reboots and app updates.
+
+### 6. 🌐 11 Languages, No Religion, No Festivals
+The launcher follows the TV's language: English, Portuguese, Spanish, French, Italian, German, Dutch, Russian, Chinese (Simplified), Telugu and Hindi. The home screen shows a simple time-of-day greeting ("Good morning! Welcome") with the clock and date. Unsupported languages fall back to English.
 
 ---
 
@@ -104,16 +129,27 @@ adb shell pm disable-user --user 0 com.google.android.tvrecommendations
 *(See [`examples/`](examples/) for model-specific profiles).*
 
 ### 4. Build & Install the Launcher
+Needs JDK 17. Gradle picks it up automatically, even if your shell's `JAVA_HOME` points to an older Java.
 ```bash
 cd launcher
 ./gradlew assembleDebug
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb -s <TV_IP_ADDRESS>:5555 install -r app/build/outputs/apk/debug/app-debug.apk
 ```
+Pass `-s` whenever a phone is also plugged in, or adb stops with "more than one device".
 
-### 5. Enable the Accessibility Interceptor
+If the install fails with "not enough space", run `adb shell pm trim-caches 999G` to clear app caches. If it stalls partway on weak Wi-Fi, copy the APK onto a USB stick and install it from the TV's file app.
+
+### 5. Make It the Home Screen
+**Android 14 Google TV:** enable the accessibility interceptor. Never disable the stock launcher here.
 ```bash
 adb shell settings put secure enabled_accessibility_services com.gathin.tvhome/.HomeKeyService
 adb shell settings put secure accessibility_enabled 1
+```
+
+**Android 9–11 (e.g. Xiaomi Mi Box 3, Mi TV):** the interceptor doesn't apply. Disable the stock launcher instead; this is safe on these versions and can be undone:
+```bash
+adb shell pm disable-user --user 0 com.google.android.tvlauncher
+# undo: adb shell pm enable com.google.android.tvlauncher
 ```
 
 ---
@@ -125,8 +161,11 @@ adb shell settings put secure accessibility_enabled 1
 | [`launcher/`](launcher/) | Native Android TV launcher with Apple tvOS aesthetics, D-pad navigation, ambient glow, and Direct Boot awareness. |
 | [`launcher/.../HomeKeyService.java`](launcher/app/src/main/java/com/gathin/tvhome/HomeKeyService.java) | Fail-safe Accessibility Service intercepting Home button and sponsored hotkeys. |
 | [`launcher/.../HdmiHelper.java`](launcher/app/src/main/java/com/gathin/tvhome/HdmiHelper.java) | Direct Realtek / Android TV hardware passthrough input launcher. |
-| [`launcher/.../PenDriveActivity.java`](launcher/app/src/main/java/com/gathin/tvhome/PenDriveActivity.java) | Media viewer card UI for offline TV storage / USB playback. |
-| [`launcher/.../VideoPlayerActivity.java`](launcher/app/src/main/java/com/gathin/tvhome/VideoPlayerActivity.java) | Hardware-accelerated full-screen player with remote seek HUD and episode switching. |
+| [`launcher/.../AppAdapter.java`](launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java) | App and input tiles, plus the hold-OK menu to pin, reorder and hide tiles. |
+| [`launcher/.../PenDriveActivity.java`](launcher/app/src/main/java/com/gathin/tvhome/PenDriveActivity.java) | Finds videos on TV storage and USB drives and lists them with thumbnails. |
+| [`launcher/.../VideoPlayerActivity.java`](launcher/app/src/main/java/com/gathin/tvhome/VideoPlayerActivity.java) | Full-screen player with remote seek HUD and previous / next video. |
+| [`launcher/.../Fonts.java`](launcher/app/src/main/java/com/gathin/tvhome/Fonts.java) | Re-applies font weights on Android 9, where the variable Outfit font otherwise renders Thin. |
+| [`launcher/app/src/main/res/values*/`](launcher/app/src/main/res/) | UI text in 11 languages (`strings.xml` per language). |
 | [`examples/acer-v-pro-32-qled/`](examples/acer-v-pro-32-qled/) | Comprehensive teardown and architecture notes for Acer / MOKA Realtek RTD QLED TVs. |
 | [`tools/`](tools/) | Helper scripts: `safe_switch.bat` / `safe_switch.sh` for one-click toggle between stock and custom launcher. |
 
