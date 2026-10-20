@@ -1,9 +1,11 @@
 package com.gathin.tvhome;
 
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -22,6 +24,7 @@ import android.media.tv.TvContract;
 import android.media.tv.TvInputInfo;
 import android.media.tv.TvInputManager;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.provider.Settings;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,11 +48,8 @@ import java.util.Set;
 
 /**
  * App tiles + HDMI/Jio input tiles.
- * First {@link MainActivity#COLUMNS} positions are the pinned dock:
- * Slot 0: HDMI 2 · Jio TV
- * Slot 1: Netflix
- * Slot 2: YouTube
- * Slot 3: JioHotstar
+ * First {@link MainActivity#COLUMNS} positions are the pinned dock. Its order is saved on the TV
+ * (long-press OK on a tile to pin or remove it); R.array.dock_apps is the default before any change.
  */
 public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
@@ -97,15 +97,28 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final Context ctx;
     private final TileListener listener;
     private final int dockSize;
-    private final List<String> favourites;
+    private static final String PREFS = "dock";
+    private static final String KEY_DOCK = "dock_apps";
+    private static final String KEY_HIDDEN = "hidden_apps";
+
+    private final List<String> favourites = new ArrayList<>();
     private final Set<String>  hidden;
     private final List<Entry>  items = new ArrayList<>();
+    /** Tiles the viewer hid from the long-press menu, saved on the TV. */
+    private final Set<String>  userHidden = new HashSet<>();
+    private final List<Entry>  hiddenItems = new ArrayList<>();
+    private RecyclerView recycler;
 
     AppAdapter(Context ctx, TileListener listener, int dockSize) {
         this.ctx        = ctx;
         this.listener   = listener;
         this.dockSize   = dockSize;
-        this.favourites = Arrays.asList(ctx.getResources().getStringArray(R.array.dock_apps));
+        // Device-protected storage: the launcher is directBootAware and may start before unlock.
+        String saved = prefs().getString(KEY_DOCK, null);
+        favourites.addAll(saved != null
+                ? Arrays.asList(TextUtils.split(saved, ","))
+                : Arrays.asList(ctx.getResources().getStringArray(R.array.dock_apps)));
+        userHidden.addAll(prefs().getStringSet(KEY_HIDDEN, Collections.emptySet()));
         this.hidden     = new HashSet<>(Arrays.asList(ctx.getResources().getStringArray(R.array.hidden_apps)));
     }
 
@@ -201,7 +214,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         fresh.add(new Entry("NLRC PenDrive Viewer", "nlrc_pendrive",
                 mediaBanner, fallbackPlayIcon, penDriveIntent, 0xFFFFB300));
 
-        // ── 3. Sort: Dock favourites first (Slot 0=hdmi_2, 1=nlrc_pendrive, 2=youtube, 3=hotstar) ─
+        // ── 3. Sort: dock favourites first, in saved order; the rest alphabetically ─
         Collections.sort(fresh, (a, b) -> {
             int fa = favourites.indexOf(a.pkg);
             int fb = favourites.indexOf(b.pkg);
@@ -214,7 +227,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         });
 
         items.clear();
-        items.addAll(fresh);
+        hiddenItems.clear();
+        for (Entry e : fresh) (userHidden.contains(e.pkg) ? hiddenItems : items).add(e);
         notifyDataSetChanged();
     }
 
@@ -363,13 +377,127 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
-            if (e.isInput) return true;
-            Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.parse("package:" + e.pkg));
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            try { ctx.startActivity(i); } catch (ActivityNotFoundException ignored) {}
+            showTileMenu(e, h.getBindingAdapterPosition());
             return true;
         });
+    }
+
+    private SharedPreferences prefs() {
+        return ctx.createDeviceProtectedStorageContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView rv) { recycler = rv; }
+
+    /** Long-press menu: move within / pin to / remove from the dock, plus App info for real apps. */
+    private void showTileMenu(Entry e, int position) {
+        boolean inDock = position >= 0 && position < dockSize;
+        List<String> labels = new ArrayList<>();
+        List<Runnable> actions = new ArrayList<>();
+        if (inDock && position > 0) {
+            labels.add(ctx.getString(R.string.move_left));
+            actions.add(() -> move(position, position - 1));
+        }
+        if (inDock && position < Math.min(dockSize, items.size()) - 1) {
+            labels.add(ctx.getString(R.string.move_right));
+            actions.add(() -> move(position, position + 1));
+        }
+        labels.add(ctx.getString(inDock ? R.string.remove_from_dock : R.string.pin_to_dock));
+        actions.add(() -> { if (inDock) unpin(e); else pin(e); });
+        labels.add(ctx.getString(R.string.hide_app));
+        actions.add(() -> hide(e, inDock));
+        if (!hiddenItems.isEmpty()) {
+            labels.add(ctx.getString(R.string.hidden_apps) + " (" + hiddenItems.size() + ")");
+            actions.add(this::showHiddenMenu);
+        }
+        if (!e.isInput) {
+            labels.add(ctx.getString(R.string.app_info));
+            actions.add(() -> {
+                Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + e.pkg));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                try { ctx.startActivity(i); } catch (ActivityNotFoundException ignored) {}
+            });
+        }
+        new AlertDialog.Builder(ctx)
+                .setTitle(e.label)
+                .setItems(labels.toArray(new String[0]), (d, which) -> actions.get(which).run())
+                .show();
+    }
+
+    /** Removes the tile from the screen (and the dock); it can be shown again from "Hidden apps". */
+    private void hide(Entry e, boolean inDock) {
+        userHidden.add(e.pkg);
+        prefs().edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
+        if (inDock) {
+            List<String> dock = dockPackages();
+            dock.remove(e.pkg);
+            saveDock(dock);
+        } else {
+            reload();
+        }
+        Toast.makeText(ctx, ctx.getString(R.string.app_hidden, e.label), Toast.LENGTH_SHORT).show();
+    }
+
+    /** Lists hidden tiles; picking one shows it again in the grid. */
+    private void showHiddenMenu() {
+        List<Entry> snapshot = new ArrayList<>(hiddenItems);
+        String[] names = new String[snapshot.size()];
+        for (int i = 0; i < names.length; i++) names[i] = snapshot.get(i).label;
+        new AlertDialog.Builder(ctx)
+                .setTitle(R.string.hidden_apps)
+                .setItems(names, (d, which) -> {
+                    Entry e = snapshot.get(which);
+                    userHidden.remove(e.pkg);
+                    prefs().edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
+                    reload();
+                    Toast.makeText(ctx, ctx.getString(R.string.app_shown, e.label), Toast.LENGTH_SHORT).show();
+                })
+                .show();
+    }
+
+    /** Swaps two dock slots and keeps focus on the moved tile so it can be moved again. */
+    private void move(int from, int to) {
+        List<String> dock = dockPackages();
+        Collections.swap(dock, from, to);
+        saveDock(dock);
+        if (recycler != null) recycler.post(() -> {
+            RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(to);
+            if (vh instanceof Holder) ((Holder) vh).card.requestFocus();
+        });
+    }
+
+    /** Puts the tile in the first dock slot; the last dock tile moves back to the grid. */
+    private void pin(Entry e) {
+        List<String> dock = dockPackages();
+        dock.add(0, e.pkg);
+        saveDock(dock.subList(0, Math.min(dockSize, dock.size())));
+        Toast.makeText(ctx, ctx.getString(R.string.pinned_to_dock, e.label), Toast.LENGTH_SHORT).show();
+    }
+
+    /** Drops the tile from the dock; the first grid app takes the freed slot. */
+    private void unpin(Entry e) {
+        List<String> dock = dockPackages();
+        dock.remove(e.pkg);
+        for (int i = dockSize; i < items.size(); i++) {
+            String pkg = items.get(i).pkg;
+            if (!pkg.equals(e.pkg)) { dock.add(pkg); break; }
+        }
+        saveDock(dock);
+        Toast.makeText(ctx, ctx.getString(R.string.removed_from_dock, e.label), Toast.LENGTH_SHORT).show();
+    }
+
+    private List<String> dockPackages() {
+        List<String> dock = new ArrayList<>();
+        for (int i = 0; i < Math.min(dockSize, items.size()); i++) dock.add(items.get(i).pkg);
+        return dock;
+    }
+
+    private void saveDock(List<String> dock) {
+        favourites.clear();
+        favourites.addAll(dock);
+        prefs().edit().putString(KEY_DOCK, TextUtils.join(",", dock)).apply();
+        reload();
     }
 
     private void launch(Entry e) {
@@ -455,6 +583,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final ImageView icon;
         final TextView  label;
         final TextView  name;
+        private boolean held;
 
         Holder(View v, TileListener listener) {
             super(v);
@@ -475,6 +604,16 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             card.setClipToOutline(true);
 
             card.setOnKeyListener((view, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
+                    // Holding OK repeats key-down; open the tile menu once and swallow the release
+                    // so it doesn't also launch the app.
+                    if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 0) {
+                        if (!held) { held = true; view.performLongClick(); }
+                        return true;
+                    }
+                    if (event.getAction() == KeyEvent.ACTION_UP && held) { held = false; return true; }
+                    return false;
+                }
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
                 if (keyCode != KeyEvent.KEYCODE_DPAD_UP && keyCode != KeyEvent.KEYCODE_DPAD_DOWN) return false;
                 int pos = getBindingAdapterPosition();

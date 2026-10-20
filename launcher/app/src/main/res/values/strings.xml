@@ -16,4 +16,17 @@
     <string name="ethernet">Ethernet</string>
     <string name="offline">Offline</string>
     <string name="accessibility_service_description">NLRC Launcher Key and Window Interceptor</string>
+
+    <!-- Dock menu -->
+    <string name="pin_to_dock">Pin to dock</string>
+    <string name="remove_from_dock">Remove from dock</string>
+    <string name="app_info">App info</string>
+    <string name="pinned_to_dock">Pinned %1$s to dock</string>
+    <string name="removed_from_dock">Removed %1$s from dock</string>
+    <string name="move_left">Move left</string>
+    <string name="move_right">Move right</string>
+    <string name="hide_app">Hide</string>
+    <string name="hidden_apps">Hidden apps</string>
+    <string name="app_hidden">%1$s hidden</string>
+    <string name="app_shown">%1$s shown again</string>
 </resources>
