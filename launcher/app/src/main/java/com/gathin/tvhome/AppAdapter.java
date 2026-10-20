@@ -128,23 +128,44 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             fresh.add(new Entry(label, new ComponentName(pkg, ri.activityInfo.name), banner, icon));
         }
 
-        // ── 2. TV Inputs (HDMI 1 / Jio TV, HDMI 2, AV) ──────────────────────
+        // ── 2. TV Inputs (Strictly physical HDMI ports, AV) ─────────────────
+        List<HdmiHelper.HdmiPort> hdmiPorts = HdmiHelper.getHdmiPorts(ctx);
+        for (HdmiHelper.HdmiPort port : hdmiPorts) {
+            String pkgKey = "hdmi_" + port.number;
+            String title  = port.label;
+            String sub    = port.isConnected
+                    ? (port.connectedDevice != null ? port.connectedDevice : ctx.getString(R.string.connected))
+                    : ctx.getString(R.string.not_connected);
+            String fullLabel = port.connectedDevice != null
+                    ? (port.label + " · " + port.connectedDevice)
+                    : port.label;
+
+            Intent switchIntent = new Intent(Intent.ACTION_VIEW)
+                    .setDataAndType(
+                            TvContract.buildChannelUriForPassthroughInput(port.id),
+                            "vnd.android.cursor.item/channel")
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Drawable fallbackIcon;
+            try {
+                fallbackIcon = ctx.getDrawable(R.drawable.ic_input);
+            } catch (Exception ex) {
+                fallbackIcon = ctx.getDrawable(android.R.drawable.ic_media_play);
+            }
+
+            int colStart = (port.number == 2 && port.isConnected) ? 0xFF0D1B2A : 0xFF141414;
+            int colEnd   = (port.number == 2 && port.isConnected) ? 0xFF1B263B : 0xFF222222;
+            int accent   = (port.number == 2) ? 0xFF0077EE : 0xFF555555;
+            Drawable banner = createHdmiBanner(ctx, title, sub, port.isConnected, colStart, colEnd);
+            fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, accent));
+        }
+
         TvInputManager tim = (TvInputManager) ctx.getSystemService(Context.TV_INPUT_SERVICE);
         if (tim != null) {
-            List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
-            // Sort: HDMI first, then others
-            Collections.sort(inputs, (a, b) -> {
-                boolean ha = a.getType() == TvInputInfo.TYPE_HDMI;
-                boolean hb = b.getType() == TvInputInfo.TYPE_HDMI;
-                if (ha != hb) return ha ? -1 : 1;
-                return String.valueOf(a.loadLabel(ctx))
-                             .compareToIgnoreCase(String.valueOf(b.loadLabel(ctx)));
-            });
+            for (TvInputInfo info : tim.getTvInputList()) {
+                if (!info.isPassthroughInput() || info.getType() == TvInputInfo.TYPE_HDMI) continue;
+                if (HdmiHelper.isChildCecInput(info)) continue;
 
-            int hdmiIdx = 1;
-            for (TvInputInfo info : inputs) {
-                if (!info.isPassthroughInput()) continue;
-                boolean isHdmi = info.getType() == TvInputInfo.TYPE_HDMI;
                 int state = tim.getInputState(info.getId());
                 boolean isConnected = (state == TvInputManager.INPUT_STATE_CONNECTED);
 
@@ -161,30 +182,9 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     fallbackIcon = ctx.getDrawable(android.R.drawable.ic_media_play);
                 }
 
-                if (isHdmi) {
-                    String pkgKey = "hdmi_" + hdmiIdx;
-                    if (hdmiIdx == 2) {
-                        // Slot 0 in dock: HDMI 2 with connected Jio TV Set Top Box
-                        String title    = "HDMI 2";
-                        String sub      = isConnected ? "Jio TV" : "Set Top Box";
-                        String fullLabel = "HDMI 2 · Jio TV";
-                        Drawable banner = createHdmiBanner(ctx, title, sub, isConnected, 0xFF0D1B2A, 0xFF1B263B);
-                        fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF0077EE));
-                    } else {
-                        // HDMI 1 (or other HDMI)
-                        String title    = "HDMI " + hdmiIdx;
-                        String sub      = isConnected ? "Connected" : "No Device";
-                        String fullLabel = "HDMI " + hdmiIdx;
-                        Drawable banner = createHdmiBanner(ctx, title, sub, isConnected, 0xFF141414, 0xFF222222);
-                        fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF555555));
-                    }
-                    hdmiIdx++;
-                } else {
-                    // AV Input
-                    String fullLabel = "AV Input";
-                    Drawable banner = createHdmiBanner(ctx, "AV", isConnected ? "Connected" : "Composite", isConnected, 0xFF141414, 0xFF222222);
-                    fresh.add(new Entry(fullLabel, "av_input", banner, fallbackIcon, switchIntent, 0xFF555555));
-                }
+                String fullLabel = "AV Input";
+                Drawable banner = createHdmiBanner(ctx, "AV", isConnected ? ctx.getString(R.string.connected) : "Composite", isConnected, 0xFF141414, 0xFF222222);
+                fresh.add(new Entry(fullLabel, "av_input", banner, fallbackIcon, switchIntent, 0xFF555555));
             }
         }
 

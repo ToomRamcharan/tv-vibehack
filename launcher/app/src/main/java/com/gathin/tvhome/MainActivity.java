@@ -485,49 +485,56 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         }
     }
 
-    /** Dropdown menu under the Inputs pill: HDMI ports (with connection state), AV and Live TV. */
+    /** Dropdown menu under the Inputs pill: Physical HDMI ports, AV and Live TV. */
     private void showInputs() {
         View anchor = findViewById(R.id.btnInputs);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
         LinearLayout rows = panel.findViewById(R.id.rows);
 
-        // Compact: as wide as the Inputs pill (a touch wider so "HDMI 1" fits), hanging right below it.
-        int width = Math.max(anchor.getWidth(), (int) (150 * density));
+        // Generous width for "HDMI 1", status dot, and device label (e.g. PlayStation 5)
+        int width = (int) (220 * density);
         final PopupWindow popup = new PopupWindow(panel, width, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));   // needed for Back to dismiss
         popup.setOutsideTouchable(true);
         popup.setAnimationStyle(0);
         popup.setElevation(0f);
 
+        // 1. Physical HDMI Ports (strictly 1 to 4)
+        List<HdmiHelper.HdmiPort> hdmiPorts = HdmiHelper.getHdmiPorts(this);
+        for (HdmiHelper.HdmiPort port : hdmiPorts) {
+            String statusText = port.connectedDevice != null ? port.connectedDevice : getString(R.string.connected);
+            addInputRow(rows, popup, R.drawable.ic_input, port.label, statusText, port.isConnected,
+                    () -> open(new Intent(Intent.ACTION_VIEW).setDataAndType(
+                            TvContract.buildChannelUriForPassthroughInput(port.id), "vnd.android.cursor.item/channel")));
+        }
+
+        // 2. Non-HDMI Passthrough Inputs (e.g. Composite / AV)
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
-        boolean sawNonHdmi = false;
         if (tim != null) {
-            List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
-            // HDMI ports first in port order, then AV and the rest.
-            Collections.sort(inputs, (a, b) -> {
-                boolean ha = a.getType() == TvInputInfo.TYPE_HDMI, hb = b.getType() == TvInputInfo.TYPE_HDMI;
-                if (ha != hb) return ha ? -1 : 1;
-                return String.valueOf(a.loadLabel(this)).compareToIgnoreCase(String.valueOf(b.loadLabel(this)));
-            });
-            for (TvInputInfo info : inputs) {
-                if (!info.isPassthroughInput()) continue;
-                CharSequence l = info.loadLabel(this);
-                String label = l == null ? info.getId() : l.toString();
-                boolean hdmi = info.getType() == TvInputInfo.TYPE_HDMI;
-                if (hdmi && !label.toUpperCase().contains("HDMI")) label = "HDMI " + label;
+            boolean sawNonHdmi = false;
+            for (TvInputInfo info : tim.getTvInputList()) {
+                if (!info.isPassthroughInput() || info.getType() == TvInputInfo.TYPE_HDMI) continue;
+                if (HdmiHelper.isChildCecInput(info)) continue;
                 final String id = info.getId();
                 int state = tim.getInputState(id);
-                if (!hdmi && rows.getChildCount() > 0 && !sawNonHdmi) addSeparator(rows);
-                if (!hdmi) sawNonHdmi = true;
-                addInputRow(rows, popup, hdmi ? R.drawable.ic_input : R.drawable.ic_av, label, state,
+                boolean isConnected = (state == TvInputManager.INPUT_STATE_CONNECTED);
+                if (rows.getChildCount() > 0 && !sawNonHdmi) {
+                    addSeparator(rows);
+                    sawNonHdmi = true;
+                }
+                CharSequence l = info.loadLabel(this);
+                String label = l == null ? "AV" : l.toString();
+                addInputRow(rows, popup, R.drawable.ic_av, label, getString(R.string.connected), isConnected,
                         () -> open(new Intent(Intent.ACTION_VIEW).setDataAndType(
                                 TvContract.buildChannelUriForPassthroughInput(id), "vnd.android.cursor.item/channel")));
             }
         }
+
+        // 3. Live TV / Tuner
         Intent liveTv = liveTvPkg.isEmpty() ? null : getPackageManager().getLeanbackLaunchIntentForPackage(liveTvPkg);
         if (liveTv != null) {
             if (rows.getChildCount() > 0) addSeparator(rows);
-            addInputRow(rows, popup, R.drawable.ic_livetv, getString(R.string.live_tv), -1, () -> open(liveTv));
+            addInputRow(rows, popup, R.drawable.ic_livetv, getString(R.string.live_tv), null, false, () -> open(liveTv));
         }
         if (rows.getChildCount() == 0) {
             Toast.makeText(this, R.string.no_inputs, Toast.LENGTH_SHORT).show();
@@ -554,24 +561,28 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         rows.addView(line, lp);
     }
 
-    private void addInputRow(LinearLayout rows, PopupWindow popup, int iconRes, String title, int state, Runnable action) {
+    private void addInputRow(LinearLayout rows, PopupWindow popup, int iconRes, String title,
+                             String statusText, boolean isConnected, Runnable action) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(iconRes);
         ((TextView) row.findViewById(R.id.title)).setText(title);
         TextView status = row.findViewById(R.id.status);
         View dot = row.findViewById(R.id.dot);
-        // This TV reports "standby" for every port whether or not something is plugged in, so only
-        // definite states are shown.
-        if (state == TvInputManager.INPUT_STATE_CONNECTED) {
-            status.setText(R.string.connected);
+
+        if (isConnected) {
             dot.setVisibility(View.VISIBLE);
-        } else if (state == TvInputManager.INPUT_STATE_DISCONNECTED) {
-            status.setText(R.string.not_connected);
-            dot.setVisibility(View.GONE);
+            if (statusText != null && !statusText.isEmpty()) {
+                status.setText(statusText);
+                status.setVisibility(View.VISIBLE);
+            } else {
+                status.setText(R.string.connected);
+                status.setVisibility(View.VISIBLE);
+            }
         } else {
-            status.setVisibility(View.GONE);
             dot.setVisibility(View.GONE);
+            status.setVisibility(View.GONE);
         }
+
         row.setOnClickListener(v -> {
             popup.dismiss();
             action.run();
