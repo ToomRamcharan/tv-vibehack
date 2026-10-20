@@ -38,8 +38,15 @@ Build with `TV_HOST=<ip> launcher/build-and-install.sh` (JDK 17, Android SDK pla
 build-tools 34.0.0; on macOS `brew install openjdk@17 android-commandlinetools` then
 `sdkmanager "platforms;android-34" "build-tools;34.0.0"`).
 
+Build with plain `./gradlew assembleDebug` if `build-and-install.sh` can't find JDK 17 at its
+Homebrew path; Gradle finds an installed JDK 17 by itself.
+
+All on-screen text lives in `app/src/main/res/values*/strings.xml` (11 languages). When you add a
+string, add it to every one of those files, or mark it `translatable="false"` if it's a brand or
+technical name. `./gradlew lintDebug` flags any language you missed.
+
 Ideas that fit the direction: an idle screensaver with clock and ambient colour, per-TV icon packs
-for apps without banners, a settings screen to edit the dock from the TV, localisation.
+for apps without banners, more languages.
 Ideas that don't: recommendation rows, content feeds, ads, telemetry.
 
 ## 3. Improve the prompt and tools
