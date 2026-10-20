@@ -404,12 +404,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             actions.add(() -> move(position, position + 1));
         }
         labels.add(ctx.getString(inDock ? R.string.remove_from_dock : R.string.pin_to_dock));
-        actions.add(() -> { if (inDock) unpin(e); else pin(e); });
+        actions.add(() -> { if (inDock) unpin(e, position); else pin(e); });
         labels.add(ctx.getString(R.string.hide_app));
-        actions.add(() -> hide(e, inDock));
+        actions.add(() -> hide(e, inDock, position));
         if (!hiddenItems.isEmpty()) {
             labels.add(ctx.getString(R.string.hidden_apps) + " (" + hiddenItems.size() + ")");
-            actions.add(this::showHiddenMenu);
+            actions.add(() -> showHiddenMenu(position));
         }
         if (!e.isInput) {
             labels.add(ctx.getString(R.string.app_info));
@@ -427,7 +427,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     /** Removes the tile from the screen (and the dock); it can be shown again from "Hidden apps". */
-    private void hide(Entry e, boolean inDock) {
+    private void hide(Entry e, boolean inDock, int position) {
         userHidden.add(e.pkg);
         prefs().edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
         if (inDock) {
@@ -437,11 +437,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         } else {
             reload();
         }
+        focusAt(position);
         Toast.makeText(ctx, ctx.getString(R.string.app_hidden, e.label), Toast.LENGTH_SHORT).show();
     }
 
     /** Lists hidden tiles; picking one shows it again in the grid. */
-    private void showHiddenMenu() {
+    private void showHiddenMenu(int position) {
         List<Entry> snapshot = new ArrayList<>(hiddenItems);
         String[] names = new String[snapshot.size()];
         for (int i = 0; i < names.length; i++) names[i] = snapshot.get(i).label;
@@ -452,6 +453,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                     userHidden.remove(e.pkg);
                     prefs().edit().putStringSet(KEY_HIDDEN, new HashSet<>(userHidden)).apply();
                     reload();
+                    focusAt(position);
                     Toast.makeText(ctx, ctx.getString(R.string.app_shown, e.label), Toast.LENGTH_SHORT).show();
                 })
                 .show();
@@ -462,8 +464,15 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> dock = dockPackages();
         Collections.swap(dock, from, to);
         saveDock(dock);
-        if (recycler != null) recycler.post(() -> {
-            RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(to);
+        focusAt(to);
+    }
+
+    /** After a reload, focus the tile now at {@code position} (clamped) so the remote doesn't lose its place. */
+    private void focusAt(int position) {
+        if (recycler == null || items.isEmpty()) return;
+        int pos = Math.max(0, Math.min(position, items.size() - 1));
+        recycler.post(() -> {
+            RecyclerView.ViewHolder vh = recycler.findViewHolderForAdapterPosition(pos);
             if (vh instanceof Holder) ((Holder) vh).card.requestFocus();
         });
     }
@@ -473,11 +482,12 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         List<String> dock = dockPackages();
         dock.add(0, e.pkg);
         saveDock(dock.subList(0, Math.min(dockSize, dock.size())));
+        focusAt(0);
         Toast.makeText(ctx, ctx.getString(R.string.pinned_to_dock, e.label), Toast.LENGTH_SHORT).show();
     }
 
     /** Drops the tile from the dock; the first grid app takes the freed slot. */
-    private void unpin(Entry e) {
+    private void unpin(Entry e, int position) {
         List<String> dock = dockPackages();
         dock.remove(e.pkg);
         for (int i = dockSize; i < items.size(); i++) {
@@ -485,6 +495,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             if (!pkg.equals(e.pkg)) { dock.add(pkg); break; }
         }
         saveDock(dock);
+        focusAt(position);
         Toast.makeText(ctx, ctx.getString(R.string.removed_from_dock, e.label), Toast.LENGTH_SHORT).show();
     }
 

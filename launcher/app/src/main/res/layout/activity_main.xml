@@ -76,47 +76,22 @@
                     android:shadowDy="6"
                     android:shadowRadius="12" />
 
-                <!-- Founder and Subtitle Row -->
-                <LinearLayout
+                <!-- Tagline (translated) -->
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="3dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ENTERTAINMENT HUB"
-                        android:textColor="#FFFFFFFF"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 700"
-                        android:letterSpacing="0.12"
-                        android:textAllCaps="true"
-                        android:shadowColor="#B3000000"
-                        android:shadowDx="1"
-                        android:shadowDy="3"
-                        android:shadowRadius="6" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="12dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="#44FFFFFF" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ENTERTAINMENT HUB"
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 500"
-                        android:letterSpacing="0.16"
-                        android:textAllCaps="true" />
-                </LinearLayout>
+                    android:layout_marginTop="3dp"
+                    android:text="@string/nlrc_tagline"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/outfit"
+                    android:fontVariationSettings="'wght' 700"
+                    android:letterSpacing="0.12"
+                    android:textAllCaps="true"
+                    android:shadowColor="#B3000000"
+                    android:shadowDx="1"
+                    android:shadowDy="3"
+                    android:shadowRadius="6" />
 
                 <!-- Time-of-day greeting -->
                 <TextView

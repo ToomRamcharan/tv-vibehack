@@ -157,7 +157,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && v.getId() == R.id.btnInputs) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (v.getId() == R.id.btnInputs
+                    || (v.getId() == R.id.btnWifi && findViewById(R.id.btnInputs).getVisibility() != View.VISIBLE))) return true;
             return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == R.id.btnSettings;
         };
         btnInputs.setOnKeyListener(pillKeys);
@@ -184,6 +185,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         updateGreeting();
         updateFatherGreeting();
         updateWifiLabel();
+        findViewById(R.id.btnInputs).setVisibility(hasInputs() ? View.VISIBLE : View.GONE);
         BootReceiver.ensureAccessibilityEnabled(this);
         handler.postDelayed(minuteTick, MINUTE_MS);
 
@@ -408,6 +410,15 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "Not available on this TV", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** True when the Inputs menu would list something (HDMI/AV passthrough or a Live TV app). */
+    private boolean hasInputs() {
+        TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
+        if (tim != null) {
+            for (TvInputInfo info : tim.getTvInputList()) if (info.isPassthroughInput()) return true;
+        }
+        return !liveTvPkg.isEmpty() && getPackageManager().getLeanbackLaunchIntentForPackage(liveTvPkg) != null;
     }
 
     /** Dropdown menu under the Inputs pill: HDMI ports (with connection state), AV and Live TV. */
