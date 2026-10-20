@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Início</string>
+    <string name="inputs">Entradas</string>
+    <string name="wifi">Wi-Fi</string>
+    <string name="settings">Configurações</string>
+    <string name="choose_input">Entradas</string>
+    <string name="connected">Conectado</string>
+    <string name="standby">Em espera</string>
+    <string name="not_connected">Sem sinal</string>
+    <string name="live_tv">TV ao Vivo</string>
+    <string name="no_inputs">Nenhuma entrada encontrada</string>
+    <string name="nlrc_brand">Início</string>
+    <string name="nlrc_tagline">Smart TV</string>
+    <string name="nlrc_founder">Apple TV Minimal</string>
+    <string name="ethernet">Ethernet</string>
+    <string name="offline">Offline</string>
+    <string name="accessibility_service_description">Interceptador de Teclas e Janelas do Launcher</string>
+</resources>
