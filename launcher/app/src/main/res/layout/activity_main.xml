@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:background="#FF000000">
 
-    <!-- Divine Shiva and Parvathi Wallpaper Background -->
+    <!-- Wallpaper background -->
     <ImageView
         android:id="@+id/wallpaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_shiva_parvathi" />
+        android:src="@drawable/bg_home" />
 
     <!-- Ambient glow in the colour of the focused dock app. -->
     <View
