@@ -33,8 +33,6 @@
 | **Dock menu (hold OK)** | **Video player** |
 | ![Tile menu with pin, move and hide](docs/preview/dock-menu.png) | ![Player with seek bar and remote hints](docs/preview/player.png) |
 
-▶️ [30-second demo video](docs/preview/demo.mp4): moving around the dock, opening All apps, and the hold-OK tile menu. Captured on a Xiaomi Mi Box 3, Android 9.
-
 ---
 
 ## 🎯 The Motivation
