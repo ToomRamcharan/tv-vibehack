@@ -10,6 +10,12 @@
     <string name="not_connected">No device</string>
     <string name="live_tv">Live TV</string>
     <string name="no_inputs">No inputs found</string>
+    <string name="edit_dock">Edit Dock</string>
+    <string name="dock_hint">Press OK on a pinned tile to remove it · OK on an app below to pin it · Back to finish</string>
+    <string name="dock_full">Dock is full — remove something first</string>
+    <string name="empty_slot">Empty · add app</string>
+    <string name="pinned_section">Pinned — the dock row on Home</string>
+    <string name="all_apps_section">All apps</string>
     <string name="nlrc_brand">NLRC</string>
     <string name="nlrc_tagline">Entertainment Hub</string>
     <string name="nlrc_founder">Intelligent TV OS</string>

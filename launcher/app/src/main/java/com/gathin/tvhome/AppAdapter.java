@@ -66,6 +66,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         final Drawable icon;
         final Intent launchIntent;
         final boolean isInput;
+        boolean isEmptySlot;
         int ambient;
 
         /** Regular application tile. */
@@ -90,6 +91,16 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             this.isInput      = true;
             this.ambient      = ambientColor;
         }
+
+        /**
+         * Placeholder for a dock slot nobody has pinned yet ("Empty · +").
+         * Key collides with nothing, so a stray persisted reference stays harmless.
+         */
+        static Entry empty() {
+            Entry e = new Entry("", "dock_empty", null, null, null, 0xFF3A3A3A);
+            e.isEmptySlot = true;
+            return e;
+        }
     }
 
     static final float FOCUS_SCALE = 1.10f;
@@ -97,35 +108,72 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final Context ctx;
     private final TileListener listener;
     private final int dockSize;
-    private final List<String> favourites;
-    private final Set<String>  hidden;
+    private List<String> favourites;
     private final List<Entry>  items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize) {
         this.ctx        = ctx;
         this.listener   = listener;
         this.dockSize   = dockSize;
-        this.favourites = Arrays.asList(ctx.getResources().getStringArray(R.array.dock_apps));
-        this.hidden     = new HashSet<>(Arrays.asList(ctx.getResources().getStringArray(R.array.hidden_apps)));
+        this.favourites = DockStore.load(ctx);
     }
 
     void reload() {
+        // Re-read every time: the dock editor writes prefs while this adapter is alive,
+        // and Home must reflect the new pins on the next onResume.
+        favourites = DockStore.load(ctx);
+
+        List<Entry> scanned = scanAll(ctx);
+        Collections.sort(scanned, (a, b) -> a.label.compareToIgnoreCase(b.label));
+
+        // Pinned apps first, in dock slot order; anything uninstalled is skipped.
+        List<Entry> out = new ArrayList<>();
+        for (String key : favourites) {
+            for (Entry e : scanned) {
+                if (!e.isEmptySlot && e.pkg.equals(key)) {
+                    out.add(e);
+                    break;
+                }
+            }
+        }
+        // Fewer pins than slots: fill with dashed "empty · +" placeholders so the
+        // dock row never shrinks and the DockDecoration band keeps its shape.
+        while (out.size() < dockSize) out.add(Entry.empty());
+
+        // Everything else fills the grid below, alphabetical.
+        Set<String> pinned = new HashSet<>(favourites);
+        for (Entry e : scanned) {
+            if (!e.isEmptySlot && !pinned.contains(e.pkg)) out.add(e);
+        }
+
+        items.clear();
+        items.addAll(out);
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Everything the launcher can show: leanback apps, TV inputs (HDMI/AV with live connection
+     * state) and the built-in NLRC PenDrive Viewer. Caller decides ordering.
+     */
+    static List<Entry> scanAll(Context ctx) {
         PackageManager pm = ctx.getPackageManager();
         Intent probe = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         List<ResolveInfo> found = pm.queryIntentActivities(probe, 0);
 
-        List<Entry> fresh = new ArrayList<>();
+        List<Entry> scanned = new ArrayList<>();
 
         // ── 1. Regular apps ──────────────────────────────────────────────────
         for (ResolveInfo ri : found) {
             if (ri.activityInfo == null) continue;
             String pkg = ri.activityInfo.packageName;
+            Set<String> hidden = new HashSet<>(Arrays.asList(
+                    ctx.getResources().getStringArray(R.array.hidden_apps)));
             if (pkg.equals(ctx.getPackageName()) || hidden.contains(pkg)) continue;
             Drawable banner = ri.activityInfo.loadBanner(pm);
             if (banner == null) banner = ri.activityInfo.applicationInfo.loadBanner(pm);
             Drawable icon  = ri.loadIcon(pm);
             String   label = String.valueOf(ri.loadLabel(pm));
-            fresh.add(new Entry(label, new ComponentName(pkg, ri.activityInfo.name), banner, icon));
+            scanned.add(new Entry(label, new ComponentName(pkg, ri.activityInfo.name), banner, icon));
         }
 
         // ── 2. TV Inputs (HDMI 1 / Jio TV, HDMI 2, AV) ──────────────────────
@@ -169,21 +217,21 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                         String sub      = isConnected ? "Jio TV" : "Set Top Box";
                         String fullLabel = "HDMI 2 · Jio TV";
                         Drawable banner = createHdmiBanner(ctx, title, sub, isConnected, 0xFF0D1B2A, 0xFF1B263B);
-                        fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF0077EE));
+                        scanned.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF0077EE));
                     } else {
                         // HDMI 1 (or other HDMI)
                         String title    = "HDMI " + hdmiIdx;
                         String sub      = isConnected ? "Connected" : "No Device";
                         String fullLabel = "HDMI " + hdmiIdx;
                         Drawable banner = createHdmiBanner(ctx, title, sub, isConnected, 0xFF141414, 0xFF222222);
-                        fresh.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF555555));
+                        scanned.add(new Entry(fullLabel, pkgKey, banner, fallbackIcon, switchIntent, 0xFF555555));
                     }
                     hdmiIdx++;
                 } else {
                     // AV Input
                     String fullLabel = "AV Input";
                     Drawable banner = createHdmiBanner(ctx, "AV", isConnected ? "Connected" : "Composite", isConnected, 0xFF141414, 0xFF222222);
-                    fresh.add(new Entry(fullLabel, "av_input", banner, fallbackIcon, switchIntent, 0xFF555555));
+                    scanned.add(new Entry(fullLabel, "av_input", banner, fallbackIcon, switchIntent, 0xFF555555));
                 }
             }
         }
@@ -198,24 +246,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             fallbackPlayIcon = null;
         }
         Drawable mediaBanner = createMediaTileBanner(ctx);
-        fresh.add(new Entry("NLRC PenDrive Viewer", "nlrc_pendrive",
+        scanned.add(new Entry("NLRC PenDrive Viewer", "nlrc_pendrive",
                 mediaBanner, fallbackPlayIcon, penDriveIntent, 0xFFFFB300));
 
-        // ── 3. Sort: Dock favourites first (Slot 0=hdmi_2, 1=nlrc_pendrive, 2=youtube, 3=hotstar) ─
-        Collections.sort(fresh, (a, b) -> {
-            int fa = favourites.indexOf(a.pkg);
-            int fb = favourites.indexOf(b.pkg);
-            if (fa >= 0 || fb >= 0) {
-                if (fa < 0) return 1;
-                if (fb < 0) return -1;
-                return Integer.compare(fa, fb);
-            }
-            return a.label.compareToIgnoreCase(b.label);
-        });
-
-        items.clear();
-        items.addAll(fresh);
-        notifyDataSetChanged();
+        return scanned;
     }
 
     /**
@@ -331,6 +365,33 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         return new BitmapDrawable(ctx.getResources(), bmp);
     }
 
+    /**
+     * Dark card for an unoccupied dock slot: thin outline plus a "+", hinting "pin something here".
+     */
+    static Drawable createEmptySlotBanner(Context ctx) {
+        float d = ctx.getResources().getDisplayMetrics().density;
+        int w = (int) (180 * d);
+        int h = (int) (101 * d);
+        Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmp);
+
+        Paint pFrame = new Paint(Paint.ANTI_ALIAS_FLAG);
+        pFrame.setStyle(Paint.Style.STROKE);
+        pFrame.setStrokeWidth(2.5f * d);
+        pFrame.setColor(0x40FFFFFF);
+        float inset = 6 * d, r = 14 * d;
+        c.drawRoundRect(inset, inset, w - inset, h - inset, r, r, pFrame);
+
+        Paint pPlus = new Paint(Paint.ANTI_ALIAS_FLAG);
+        pPlus.setColor(0x59FFFFFF);
+        pPlus.setStrokeWidth(4f * d);
+        float cx = w / 2f, cy = h / 2f, arm = 13 * d;
+        c.drawLine(cx - arm, cy, cx + arm, cy, pPlus);
+        c.drawLine(cx, cy - arm, cx, cy + arm, pPlus);
+
+        return new BitmapDrawable(ctx.getResources(), bmp);
+    }
+
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -346,6 +407,16 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         h.name.setAlpha(0f);
         h.card.setScaleX(1f);
         h.card.setScaleY(1f);
+
+        if (e.isEmptySlot) {
+            h.banner.setImageDrawable(createEmptySlotBanner(ctx));
+            h.banner.setVisibility(View.VISIBLE);
+            h.icon.setVisibility(View.GONE);
+            h.label.setVisibility(View.GONE);
+            h.card.setOnClickListener(null);
+            h.card.setLongClickable(false);
+            return;
+        }
 
         if (e.banner != null) {
             h.banner.setImageDrawable(e.banner);
@@ -373,6 +444,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     }
 
     private void launch(Entry e) {
+        if (e.isEmptySlot) return;
         try {
             if ("com.netflix.ninja".equals(e.pkg) || "com.amazon.amazonvideo.livingroom".equals(e.pkg)) {
                 // User requirement: Clicking Netflix or Prime Video opens HDMI 2 (Jio TV)
@@ -400,6 +472,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     String labelAt(int position) {
         return position >= 0 && position < items.size() ? items.get(position).label : "";
+    }
+
+    /** True when that dock position holds a dashed "empty · +" placeholder. */
+    boolean isDockSlotEmpty(int position) {
+        return position >= 0 && position < items.size() && items.get(position).isEmptySlot;
     }
 
     int ambientColorAt(int position) {

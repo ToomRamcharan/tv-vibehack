@@ -154,6 +154,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnInputs.setOnClickListener(v -> showInputs());
         btnWifi.setOnClickListener(v -> open(new Intent(Settings.ACTION_WIFI_SETTINGS)));
         btnSettings.setOnClickListener(v -> open(new Intent(Settings.ACTION_SETTINGS)));
+        // Long press on Settings also opens the dock editor, in case this remote has no MENU key.
+        btnSettings.setLongClickable(true);
+        btnSettings.setOnLongClickListener(v -> {
+            startActivity(new Intent(this, DockEditorActivity.class));
+            return true;
+        });
 
         // Keep focus on the top bar at its ends and at the top: Android's focus finder would otherwise
         // jump to a tile far below when there is nothing in that direction.
@@ -219,6 +225,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Home screen: Back goes nowhere.
     }
 
+    /** MENU (or any long press captured by children) key opens the dock editor from the home screen. */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            startActivity(new Intent(this, DockEditorActivity.class));
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     // ---- glass highlight -------------------------------------------------------------------------
 
     @Override
@@ -259,7 +275,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             int decoratedTop = item.getTop() - (int) (6 * density);
             int dy = decoratedTop - grid.getPaddingTop();
             if (Math.abs(dy) > 1) grid.smoothScrollBy(0, dy);
-            showHero(position, r.top - dy);
+            if (adapter.isDockSlotEmpty(position)) {
+                hideHero();
+            } else {
+                showHero(position, r.top - dy);
+            }
         } else {
             hideHero();
             // Scroll just enough so the whole glass (not only the tile) is visible.

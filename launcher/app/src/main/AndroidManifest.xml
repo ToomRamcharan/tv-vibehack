@@ -57,6 +57,12 @@
             android:screenOrientation="landscape"
             android:theme="@style/Theme.TvHome" />
 
+        <activity
+            android:name=".DockEditorActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.TvHome" />
+
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"
