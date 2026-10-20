@@ -3,6 +3,7 @@ package com.gathin.tvhome;
 import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvContract;
+import android.media.tv.TvInputManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +29,12 @@ public final class HdmiHelper {
     private static long sLastSwitchTime = 0;
 
     private HdmiHelper() {}
+
+    /** True only on TVs that have this HDMI 2 input; elsewhere Netflix/Prime must open normally. */
+    public static boolean isAvailable(Context context) {
+        TvInputManager tim = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
+        return tim != null && tim.getTvInputInfo(HDMI_2_INPUT_ID) != null;
+    }
 
     /**
      * Creates the explicit passthrough intent to display HDMI 2 directly.
@@ -57,7 +64,7 @@ public final class HdmiHelper {
             try {
                 if (showToast) {
                     Toast.makeText(context.getApplicationContext(),
-                            "జియో టీవీ కి మారుతోంది... 📺 (Jio TV HDMI 2)",
+                            "Switching to Jio TV (HDMI 2)... 📺",
                             Toast.LENGTH_SHORT).show();
                 }
                 Intent intent = createHdmi2Intent();

@@ -374,7 +374,8 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     private void launch(Entry e) {
         try {
-            if ("com.netflix.ninja".equals(e.pkg) || "com.amazon.amazonvideo.livingroom".equals(e.pkg)) {
+            if (("com.netflix.ninja".equals(e.pkg) || "com.amazon.amazonvideo.livingroom".equals(e.pkg))
+                    && HdmiHelper.isAvailable(ctx)) {
                 // User requirement: Clicking Netflix or Prime Video opens HDMI 2 (Jio TV)
                 HdmiHelper.switchToHdmi2(ctx, true);
                 return;
