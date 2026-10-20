@@ -44,4 +44,5 @@
     <string name="vp_finished">Alle video\'s zijn afgelopen</string>
     <string name="vp_error">Deze video kan niet worden afgespeeld</string>
     <string name="vp_not_found">Video niet gevonden</string>
+    <string name="more_apps">▼  Alle apps</string>
 </resources>

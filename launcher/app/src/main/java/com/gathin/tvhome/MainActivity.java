@@ -60,6 +60,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private GlassView glass;
     private View ambient;
     private TextView heroName;
+    private View moreAppsHint;
     private GradientDrawable ambientGlow;
     private int ambientColor;
     private boolean heroShown;
@@ -96,6 +97,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glass = findViewById(R.id.glass);
         ambient = findViewById(R.id.ambient);
         heroName = findViewById(R.id.heroName);
+        moreAppsHint = findViewById(R.id.moreAppsHint);
         ambientGlow = new GradientDrawable();
         ambientGlow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
         ambientGlow.setGradientCenter(0.32f, 0.42f);
@@ -122,7 +124,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             int h = b - t;
             int dockRow = (int) ((145 + 6 + 12) * density);   // item height plus DockDecoration offsets
-            int want = Math.max(0, h - dockRow - (int) (30 * density));
+            // Leave ~70dp under the dock so the next row of apps peeks up (with the "All apps" hint).
+            int want = Math.max(0, h - dockRow - (int) (70 * density));
             if (grid.getPaddingTop() != want) {
                 grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
             }
@@ -168,7 +171,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
-            if (!onTile) hideGlass();
+            if (!onTile) {
+                hideGlass();
+                updateMoreAppsHint(false);
+            }
         });
     }
 
@@ -221,6 +227,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocused(int position, View card) {
+        updateMoreAppsHint(position >= COLUMNS);
         lastFocused = position;
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = new Rect(0, 0, card.getWidth(), card.getHeight());
@@ -410,6 +417,14 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } catch (ActivityNotFoundException e) {
             Toast.makeText(this, "Not available on this TV", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** Shows the "All apps" hint while focus is on the dock or top bar and more apps sit below. */
+    private void updateMoreAppsHint(boolean inGrid) {
+        boolean show = !inGrid && adapter.getItemCount() > COLUMNS;
+        if (show) moreAppsHint.setVisibility(View.VISIBLE);
+        moreAppsHint.animate().alpha(show ? 1f : 0f).setDuration(200)
+                .withEndAction(() -> { if (!show) moreAppsHint.setVisibility(View.GONE); }).start();
     }
 
     /** True when the Inputs menu would list something (HDMI/AV passthrough or a Live TV app). */

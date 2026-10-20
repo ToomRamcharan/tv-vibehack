@@ -44,4 +44,5 @@
     <string name="vp_finished">Все видео просмотрены</string>
     <string name="vp_error">Не удаётся воспроизвести это видео</string>
     <string name="vp_not_found">Видео не найдено</string>
+    <string name="more_apps">▼  Все приложения</string>
 </resources>

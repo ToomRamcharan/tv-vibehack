@@ -28,7 +28,7 @@
         android:layout_marginStart="68dp"
         android:alpha="0"
         android:textColor="#FFFFFFFF"
-        android:textSize="48sp"
+        android:textSize="34sp"
         android:fontFamily="@font/outfit"
         android:fontVariationSettings="'wght' 400"
         android:letterSpacing="-0.02"
@@ -145,7 +145,7 @@
                         android:format12Hour="a"
                         android:format24Hour=""
                         android:textColor="#B3FFFFFF"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:fontFamily="@font/outfit"
                         android:fontVariationSettings="'wght' 500"
                         android:letterSpacing="0.08"
@@ -169,8 +169,8 @@
                         android:layout_marginBottom="8dp"
                         android:format12Hour="EEEE  d MMMM"
                         android:format24Hour="EEEE  d MMMM"
-                        android:textColor="#99FFFFFF"
-                        android:textSize="13sp"
+                        android:textColor="#D9FFFFFF"
+                        android:textSize="16sp"
                         android:fontFamily="@font/outfit"
                         android:fontVariationSettings="'wght' 400"
                         android:letterSpacing="0.12"
@@ -247,5 +247,25 @@
         android:layout_height="10dp"
         android:alpha="0"
         android:importantForAccessibility="no" />
+
+    <!-- Tells first-time users the full app grid is below the dock. -->
+    <TextView
+        android:id="@+id/moreAppsHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_hint_pill"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:text="@string/more_apps"
+        android:textColor="#FFFFFFFF"
+        android:textSize="15sp"
+        android:fontFamily="@font/outfit"
+        android:fontVariationSettings="'wght' 600"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
 </FrameLayout>

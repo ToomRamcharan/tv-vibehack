@@ -44,4 +44,5 @@
     <string name="vp_finished">所有视频已播放完毕</string>
     <string name="vp_error">无法播放此视频</string>
     <string name="vp_not_found">未找到视频</string>
+    <string name="more_apps">▼  全部应用</string>
 </resources>

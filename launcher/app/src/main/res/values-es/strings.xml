@@ -44,4 +44,5 @@
     <string name="vp_finished">Todos los vídeos han terminado</string>
     <string name="vp_error">No se puede reproducir este vídeo</string>
     <string name="vp_not_found">Vídeo no encontrado</string>
+    <string name="more_apps">▼  Todas las apps</string>
 </resources>
