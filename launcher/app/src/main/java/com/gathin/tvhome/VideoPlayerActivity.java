@@ -1,12 +1,9 @@
 package com.gathin.tvhome;
 
 import android.app.Activity;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,16 +14,15 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
  * Fullscreen video player with parent-friendly TV remote navigation.
- * Allows instant, effortless switching between Part 1, Part 2, and Part 3.
+ * Plays the list handed over by {@link PenDriveActivity}; Up/Down or CH+/CH- step between videos.
  */
 public class VideoPlayerActivity extends Activity {
-
-    private static final String TAG = "VideoPlayerActivity";
 
     private VideoView videoView;
     private ProgressBar loadingSpinner;
@@ -37,7 +33,8 @@ public class VideoPlayerActivity extends Activity {
     private TextView tvCurrentTime, tvTotalTime;
     private SeekBar seekBar;
 
-    private int currentPart = 1;
+    private List<String> paths = new ArrayList<>();
+    private int index = 0;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean isHudVisible = true;
 
@@ -54,6 +51,7 @@ public class VideoPlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player);
+        Fonts.applyWeights(findViewById(android.R.id.content));
 
         videoView = findViewById(R.id.videoView);
         loadingSpinner = findViewById(R.id.loadingSpinner);
@@ -65,11 +63,13 @@ public class VideoPlayerActivity extends Activity {
         tvTotalTime = findViewById(R.id.tvTotalTime);
         seekBar = findViewById(R.id.seekBar);
 
-        currentPart = getIntent().getIntExtra("PART_NUMBER", 1);
-        if (currentPart < 1 || currentPart > 3) currentPart = 1;
+        List<String> given = getIntent().getStringArrayListExtra(PenDriveActivity.EXTRA_PATHS);
+        if (given != null) paths = given;
+        if (paths.isEmpty()) { finish(); return; }
+        index = Math.max(0, Math.min(paths.size() - 1, getIntent().getIntExtra(PenDriveActivity.EXTRA_INDEX, 0)));
 
         setupVideoListeners();
-        playPart(currentPart);
+        playAt(index);
 
         // Tap root to toggle HUD
         findViewById(R.id.playerRoot).setOnClickListener(v -> toggleHud());
@@ -82,47 +82,42 @@ public class VideoPlayerActivity extends Activity {
             seekBar.setMax(duration > 0 ? duration : 0);
             tvTotalTime.setText(formatTime(duration));
             videoView.start();
-            showCenterToast("▶ Playing");
+            showCenterToast(getString(R.string.vp_playing));
             scheduleHideHud();
-            handler.post(progressUpdateRunnable);
+            startProgressUpdates();
         });
 
         videoView.setOnCompletionListener(mp -> {
-            if (currentPart < 3) {
-                Toast.makeText(this, "Part " + currentPart + " finished. Playing next part...", Toast.LENGTH_LONG).show();
-                playPart(currentPart + 1);
+            if (index < paths.size() - 1) {
+                playAt(index + 1);
             } else {
-                Toast.makeText(this, "Media archive playback completed 🙏", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.vp_finished, Toast.LENGTH_LONG).show();
                 finish();
             }
         });
 
         videoView.setOnErrorListener((mp, what, extra) -> {
             loadingSpinner.setVisibility(View.GONE);
-            Toast.makeText(this, "Cannot play video format", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.vp_error, Toast.LENGTH_SHORT).show();
             return true;
         });
     }
 
-    private void playPart(int partNumber) {
-        currentPart = Math.max(1, Math.min(3, partNumber));
+    private void playAt(int i) {
+        index = Math.max(0, Math.min(paths.size() - 1, i));
+        File videoFile = new File(paths.get(index));
+        tvVideoTitle.setText(PenDriveActivity.displayName(videoFile));
+        tvVideoSource.setText(getString(R.string.vp_position, index + 1, paths.size()));
+        seekBar.setProgress(0);
+        tvCurrentTime.setText(formatTime(0));
 
-        String title = "Media Archive · Part " + currentPart;
-        tvVideoTitle.setText(title);
-        tvVideoSource.setText("NLRC PenDrive Viewer · Part " + currentPart);
-
-        File videoFile = PenDriveActivity.findPartFile(currentPart);
-
-        if (videoFile != null && videoFile.exists()) {
+        if (videoFile.exists()) {
             loadingSpinner.setVisibility(View.VISIBLE);
             videoView.stopPlayback();
             videoView.setVideoPath(videoFile.getAbsolutePath());
             showHud();
         } else {
-            Toast.makeText(this,
-                    "Video Part " + currentPart + " not found on TV storage",
-                    Toast.LENGTH_LONG).show();
-            showCenterToast("Part " + currentPart + " Not Found");
+            showCenterToast(getString(R.string.vp_not_found));
         }
     }
 
@@ -134,12 +129,12 @@ public class VideoPlayerActivity extends Activity {
         }
     }
 
-    private String formatTime(int ms) {
+    static String formatTime(long ms) {
         if (ms <= 0) return "00:00";
-        int totalSeconds = ms / 1000;
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        int hours = minutes / 60;
+        long totalSeconds = ms / 1000;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+        long hours = minutes / 60;
         minutes = minutes % 60;
 
         if (hours > 0) {
@@ -162,10 +157,10 @@ public class VideoPlayerActivity extends Activity {
             case KeyEvent.KEYCODE_MEDIA_PAUSE:
                 if (videoView.isPlaying()) {
                     videoView.pause();
-                    showCenterToast("⏸ Paused");
+                    showCenterToast(getString(R.string.vp_paused));
                 } else {
                     videoView.start();
-                    showCenterToast("▶ Playing");
+                    showCenterToast(getString(R.string.vp_playing));
                     scheduleHideHud();
                 }
                 return true;
@@ -175,7 +170,7 @@ public class VideoPlayerActivity extends Activity {
             case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                 int posFwd = Math.min(videoView.getDuration(), videoView.getCurrentPosition() + 10000);
                 videoView.seekTo(posFwd);
-                showCenterToast("⏩ +10 Seconds");
+                showCenterToast(getString(R.string.vp_forward));
                 return true;
 
             // Rewind 10s
@@ -183,31 +178,22 @@ public class VideoPlayerActivity extends Activity {
             case KeyEvent.KEYCODE_MEDIA_REWIND:
                 int posRwd = Math.max(0, videoView.getCurrentPosition() - 10000);
                 videoView.seekTo(posRwd);
-                showCenterToast("⏪ -10 Seconds");
+                showCenterToast(getString(R.string.vp_rewind));
                 return true;
 
-            // Effortless Switching to Next Part
+            // Next / previous video
             case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_CHANNEL_DOWN:
             case KeyEvent.KEYCODE_MEDIA_NEXT:
-                if (currentPart < 3) {
-                    Toast.makeText(this, "Switching to Part " + (currentPart + 1) + " 🎬", Toast.LENGTH_SHORT).show();
-                    playPart(currentPart + 1);
-                } else {
-                    Toast.makeText(this, "Already on final part (Part 3)", Toast.LENGTH_SHORT).show();
-                }
+                if (index < paths.size() - 1) playAt(index + 1);
+                else showCenterToast(getString(R.string.vp_last));
                 return true;
 
-            // Effortless Switching to Previous Part
             case KeyEvent.KEYCODE_DPAD_UP:
             case KeyEvent.KEYCODE_CHANNEL_UP:
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
-                if (currentPart > 1) {
-                    Toast.makeText(this, "Switching to Part " + (currentPart - 1) + " 🎬", Toast.LENGTH_SHORT).show();
-                    playPart(currentPart - 1);
-                } else {
-                    Toast.makeText(this, "Already on first part (Part 1)", Toast.LENGTH_SHORT).show();
-                }
+                if (index > 0) playAt(index - 1);
+                else showCenterToast(getString(R.string.vp_first));
                 return true;
 
             case KeyEvent.KEYCODE_BACK:
@@ -246,6 +232,18 @@ public class VideoPlayerActivity extends Activity {
     private void scheduleHideHud() {
         handler.removeCallbacks(hideHudRunnable);
         handler.postDelayed(hideHudRunnable, 3500);
+    }
+
+    /** One self-reposting updater at a time; posting again would stack a second loop. */
+    private void startProgressUpdates() {
+        handler.removeCallbacks(progressUpdateRunnable);
+        handler.post(progressUpdateRunnable);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startProgressUpdates();   // onPause stopped it; the loop only updates while playing
     }
 
     @Override

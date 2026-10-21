@@ -3,11 +3,17 @@ package com.gathin.tvhome;
 import android.content.Context;
 import android.content.Intent;
 import android.media.tv.TvContract;
+import android.media.tv.TvInputInfo;
+import android.media.tv.TvInputManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Helper to seamlessly switch the TV to HDMI 2 (Jio TV Set Top Box)
@@ -28,6 +34,26 @@ public final class HdmiHelper {
     private static long sLastSwitchTime = 0;
 
     private HdmiHelper() {}
+
+    /** Passthrough inputs (HDMI first, then AV and the rest, by label), as the Inputs menu and tiles list them. */
+    static List<TvInputInfo> passthroughInputs(Context context) {
+        List<TvInputInfo> inputs = new ArrayList<>();
+        TvInputManager tim = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
+        if (tim == null) return inputs;
+        for (TvInputInfo info : tim.getTvInputList()) if (info.isPassthroughInput()) inputs.add(info);
+        Collections.sort(inputs, (a, b) -> {
+            boolean ha = a.getType() == TvInputInfo.TYPE_HDMI, hb = b.getType() == TvInputInfo.TYPE_HDMI;
+            if (ha != hb) return ha ? -1 : 1;
+            return String.valueOf(a.loadLabel(context)).compareToIgnoreCase(String.valueOf(b.loadLabel(context)));
+        });
+        return inputs;
+    }
+
+    /** True only on TVs that have this HDMI 2 input; elsewhere Netflix/Prime must open normally. */
+    public static boolean isAvailable(Context context) {
+        TvInputManager tim = (TvInputManager) context.getSystemService(Context.TV_INPUT_SERVICE);
+        return tim != null && tim.getTvInputInfo(HDMI_2_INPUT_ID) != null;
+    }
 
     /**
      * Creates the explicit passthrough intent to display HDMI 2 directly.
@@ -56,9 +82,7 @@ public final class HdmiHelper {
         MAIN_HANDLER.post(() -> {
             try {
                 if (showToast) {
-                    Toast.makeText(context.getApplicationContext(),
-                            "జియో టీవీ కి మారుతోంది... 📺 (Jio TV HDMI 2)",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context.getApplicationContext(), R.string.hdmi_switching, Toast.LENGTH_SHORT).show();
                 }
                 Intent intent = createHdmi2Intent();
                 context.startActivity(intent);
@@ -66,8 +90,7 @@ public final class HdmiHelper {
             } catch (Exception e) {
                 Log.e(TAG, "Failed to switch to HDMI 2", e);
                 try {
-                    Toast.makeText(context.getApplicationContext(),
-                            "Cannot open HDMI 2", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context.getApplicationContext(), R.string.hdmi_failed, Toast.LENGTH_SHORT).show();
                 } catch (Exception ignored) {}
             }
         });

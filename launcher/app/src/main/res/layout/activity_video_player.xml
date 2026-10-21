@@ -62,56 +62,63 @@
                 android:orientation="vertical">
 
                 <TextView
+    android:fontFamily="@font/outfit"
                     android:id="@+id/tvVideoTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Media Archive · Part 1"
+                    android:text=""
                     android:textColor="#FFFFFF"
                     android:textSize="24sp"
-                    android:textStyle="bold"
+                    android:fontVariationSettings="'wght' 700"
+    android:textStyle="bold"
                     android:shadowColor="#000000"
                     android:shadowRadius="8" />
 
                 <TextView
+    android:fontFamily="@font/outfit"
                     android:id="@+id/tvVideoSource"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="NLRC PenDrive Viewer · TV Storage"
-                    android:textColor="#FFD700"
-                    android:textSize="14sp" />
+                    android:text=""
+                    android:textColor="#FFF59D"
+                    android:textSize="17sp" />
             </LinearLayout>
 
             <TextView
+    android:fontFamily="@font/outfit"
                 android:id="@+id/tvPartSwitcherHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_festival_pill"
+                android:background="@drawable/bg_glass_pill"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:text="[CH+ / CH- or ▲/▼] Switch Parts"
+                android:text="@string/vp_switch_hint"
                 android:textColor="#FFFFFF"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:fontVariationSettings="'wght' 700"
+    android:textStyle="bold" />
         </LinearLayout>
 
         <!-- Center Status Pill -->
         <TextView
+    android:fontFamily="@font/outfit"
             android:id="@+id/tvCenterStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/bg_festival_pill"
+            android:background="@drawable/bg_glass_pill"
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:text="▶ Playing"
+            android:text="@string/vp_playing"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
-            android:textStyle="bold"
+            android:fontVariationSettings="'wght' 700"
+    android:textStyle="bold"
             android:alpha="0" />
 
         <!-- Bottom Bar Scrim & Progress -->
@@ -131,8 +138,8 @@
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:progressTint="#FFD700"
-                android:thumbTint="#FFD700" />
+                android:progressTint="#FFF59D"
+                android:thumbTint="#FFF59D" />
 
             <!-- Time and Controls Row -->
             <LinearLayout
@@ -148,24 +155,23 @@
                     android:layout_height="wrap_content"
                     android:text="00:00"
                     android:textColor="#FFFFFF"
-                    android:textSize="13sp"
-                    android:fontFamily="monospace" />
+                    android:textSize="16sp" />
 
                 <TextView
+    android:fontFamily="@font/outfit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" / "
-                    android:textColor="#94A3B8"
-                    android:textSize="13sp" />
+                    android:textColor="#CBD5E1"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvTotalTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24:07"
-                    android:textColor="#94A3B8"
-                    android:textSize="13sp"
-                    android:fontFamily="monospace" />
+                    android:text="00:00"
+                    android:textColor="#CBD5E1"
+                    android:textSize="16sp" />
 
                 <View
                     android:layout_width="0dp"
@@ -173,11 +179,12 @@
                     android:layout_weight="1" />
 
                 <TextView
+    android:fontFamily="@font/outfit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="[◄ 10s Rewind]  ·  [OK Play/Pause]  ·  [10s Forward ►]  ·  [BACK Exit]"
-                    android:textColor="#CBD5E1"
-                    android:textSize="12sp" />
+                    android:text="@string/vp_controls_hint"
+                    android:textColor="#F1F5F9"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
     </FrameLayout>

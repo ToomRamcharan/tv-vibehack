@@ -40,9 +40,6 @@ import androidx.dynamicanimation.animation.SpringForce;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * tvOS style home: black, a pinned dock row, an app grid, and one glass highlight that springs between tiles.
@@ -60,12 +57,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private GlassView glass;
     private View ambient;
     private TextView heroName;
+    private View moreAppsHint;
     private GradientDrawable ambientGlow;
     private int ambientColor;
     private boolean heroShown;
     private TextView greeting;
     private TextView fatherGreeting;
-    private TextView festivalText;
     private TextView btnWifi;
     private SpringAnimation springX, springY;
     private float glassTargetX, glassTargetY;
@@ -79,7 +76,6 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         public void run() {
             updateGreeting();
             updateFatherGreeting();
-            updateFestivalGreeting();
             updateWifiLabel();
             handler.postDelayed(this, MINUTE_MS);
         }
@@ -89,6 +85,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Fonts.applyWeights(findViewById(android.R.id.content));
         density = getResources().getDisplayMetrics().density;
         COLUMNS = Math.max(1, getResources().getInteger(R.integer.columns));
         liveTvPkg = getString(R.string.live_tv_package).trim();
@@ -97,6 +94,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         glass = findViewById(R.id.glass);
         ambient = findViewById(R.id.ambient);
         heroName = findViewById(R.id.heroName);
+        moreAppsHint = findViewById(R.id.moreAppsHint);
         ambientGlow = new GradientDrawable();
         ambientGlow.setGradientType(GradientDrawable.RADIAL_GRADIENT);
         ambientGlow.setGradientCenter(0.32f, 0.42f);
@@ -105,9 +103,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 ambientGlow.setGradientRadius((r - l) * 0.62f));
         greeting = findViewById(R.id.greeting);
         fatherGreeting = findViewById(R.id.fatherGreeting);
-        festivalText = findViewById(R.id.festivalText);
         updateFatherGreeting();
-        updateFestivalGreeting();
         btnWifi = findViewById(R.id.btnWifi);
         BootReceiver.ensureAccessibilityEnabled(this);
 
@@ -125,7 +121,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             int h = b - t;
             int dockRow = (int) ((145 + 6 + 12) * density);   // item height plus DockDecoration offsets
-            int want = Math.max(0, h - dockRow - (int) (30 * density));
+            // Leave ~70dp under the dock so the next row of apps peeks up (with the "All apps" hint).
+            int want = Math.max(0, h - dockRow - (int) (70 * density));
             if (grid.getPaddingTop() != want) {
                 grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
             }
@@ -160,7 +157,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         View.OnKeyListener pillKeys = (v, keyCode, event) -> {
             if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) return true;
-            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && v.getId() == R.id.btnInputs) return true;
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (v.getId() == R.id.btnInputs
+                    || (v.getId() == R.id.btnWifi && findViewById(R.id.btnInputs).getVisibility() != View.VISIBLE))) return true;
             return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && v.getId() == R.id.btnSettings;
         };
         btnInputs.setOnKeyListener(pillKeys);
@@ -170,7 +168,10 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Hide the glass when focus leaves the tiles.
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((oldF, newF) -> {
             boolean onTile = newF != null && newF.getId() == R.id.card;
-            if (!onTile) hideGlass();
+            if (!onTile) {
+                hideGlass();
+                updateMoreAppsHint(false);
+            }
         });
     }
 
@@ -186,8 +187,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         grid.scheduleLayoutAnimation();
         updateGreeting();
         updateFatherGreeting();
-        updateFestivalGreeting();
         updateWifiLabel();
+        findViewById(R.id.btnInputs).setVisibility(hasInputs() ? View.VISIBLE : View.GONE);
         BootReceiver.ensureAccessibilityEnabled(this);
         handler.postDelayed(minuteTick, MINUTE_MS);
 
@@ -223,6 +224,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     @Override
     public void onTileFocused(int position, View card) {
+        updateMoreAppsHint(position >= COLUMNS);
         lastFocused = position;
         // Tile rect in root coordinates, using layout positions (ignores the scale animation).
         Rect r = new Rect(0, 0, card.getWidth(), card.getHeight());
@@ -368,87 +370,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // No-op: NLRC brand name is declared in activity_main.xml — no runtime greeting needed.
     }
 
-    /**
-     * Polite home greeting based on time of day:
-     * - Morning (5:00 AM – 11:59 AM): శుభోదయం · స్వాగతం! 🙏
-     * - Afternoon (12:00 PM – 4:59 PM): శుభ మధ్యాహ్నం · స్వాగతం! 🙏
-     * - Evening (5:00 PM – 8:59 PM): శుభ సాయంత్రం · స్వాగతం! 🙏
-     * - Night (9:00 PM – 4:59 AM): శుభ రాత్రి · స్వాగతం! 🙏
-     */
+    /** Greeting based on time of day: morning 5-12, afternoon 12-17, evening 17-21, night otherwise. */
     private void updateFatherGreeting() {
         if (fatherGreeting == null) return;
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        int hour = cal.get(java.util.Calendar.HOUR_OF_DAY);
-
-        String wish;
-        if (hour >= 5 && hour < 12) {
-            wish = "శుభోదయం · స్వాగతం! 🙏";
-        } else if (hour >= 12 && hour < 17) {
-            wish = "శుభ మధ్యాహ్నం · స్వాగతం! 🙏";
-        } else if (hour >= 17 && hour < 21) {
-            wish = "శుభ సాయంత్రం · స్వాగతం! 🙏";
-        } else {
-            wish = "శుభ రాత్రి · స్వాగతం! 🙏";
-        }
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        int wish;
+        if (hour >= 5 && hour < 12)       wish = R.string.greeting_morning;
+        else if (hour >= 12 && hour < 17) wish = R.string.greeting_afternoon;
+        else if (hour >= 17 && hour < 21) wish = R.string.greeting_evening;
+        else                              wish = R.string.greeting_night;
         fatherGreeting.setText(wish);
-    }
-
-    /** Updates dynamic Telangana Panchangam, Calendar & Festival wishes based on current date. */
-    private void updateFestivalGreeting() {
-        if (festivalText == null) return;
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        int month = cal.get(java.util.Calendar.MONTH) + 1; // 1-based: 1=Jan, 10=Oct
-        int day = cal.get(java.util.Calendar.DAY_OF_MONTH);
-        int dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK);
-
-        String teluguDay;
-        switch (dayOfWeek) {
-            case java.util.Calendar.SUNDAY:    teluguDay = "ఆదివారం"; break;
-            case java.util.Calendar.MONDAY:    teluguDay = "సోమవారం"; break;
-            case java.util.Calendar.TUESDAY:   teluguDay = "మంగళవారం"; break;
-            case java.util.Calendar.WEDNESDAY: teluguDay = "బుధవారం"; break;
-            case java.util.Calendar.THURSDAY:  teluguDay = "గురువారం"; break;
-            case java.util.Calendar.FRIDAY:    teluguDay = "శుక్రవారం"; break;
-            case java.util.Calendar.SATURDAY:  teluguDay = "శనివారం"; break;
-            default: teluguDay = "";
-        }
-
-        String greeting;
-
-        // Dynamic Telangana & Indian Festivals + Panchangam Details
-        if (month == 10 && day == 19) {
-            // Today: Monday 19 October 2026 (Saddula Bathukamma & Navami)
-            greeting = "🌸 సద్దుల బతుకమ్మ & మహార్నవమి · ఆశ్వయుజ శుక్ల నవమి · " + teluguDay + " 🌸";
-        } else if (month == 10 && day == 20) {
-            // Tomorrow: Tuesday 20 October 2026 (Dussehra / Vijayadashami)
-            greeting = "🌺 విజయదశమి దసరా పండుగ శుభాకాంక్షలు · ఆశ్వయుజ శుక్ల దశమి · " + teluguDay + " 🌺";
-        } else if (month == 10 && day <= 22) {
-            greeting = "🌸 విజయదశమి దసరా శుభాకాంక్షలు · ఆశ్వయుజ మాసం · " + teluguDay + " 🌸";
-        } else if (month == 11 && day <= 15) {
-            greeting = "🪔 దీపావళి లక్ష్మీ పూజ శుభాకాంక్షలు · కార్తీక మాసం · " + teluguDay + " 🪔";
-        } else if (month == 1 && day >= 13 && day <= 17) {
-            greeting = "🪁 సంక్రాంతి & కనుమ పండుగ శుభాకాంక్షలు · పుష్య మాసం · " + teluguDay + " 🪁";
-        } else if ((month == 2 && day >= 24) || (month == 3 && day <= 4)) {
-            greeting = "🔱 మహా శివరాత్రి శుభాకాంక్షలు · మాఘ బహుళ చతుర్దశి · " + teluguDay + " 🔱";
-        } else if (month == 3 && day >= 22 && day <= 27) {
-            greeting = "🎨 హోలీ పండుగ శుభాకాంక్షలు · ఫాల్గుణ పౌర్ణమి · " + teluguDay + " 🎨";
-        } else if ((month == 3 && day >= 28) || (month == 4 && day <= 8)) {
-            greeting = "🌿 శ్రీ క్రోధి/విశ్వావసు నామ ఉగాది శుభాకాంక్షలు · చైత్ర శుద్ధ పాడ్యమి · " + teluguDay + " 🌿";
-        } else if (month == 4 && day >= 14 && day <= 22) {
-            greeting = "🏹 శ్రీరామనవమి శుభాకాంక్షలు · చైత్ర శుక్ల నవమి · " + teluguDay + " 🏹";
-        } else if (month == 7 || (month == 8 && day <= 10)) {
-            greeting = "🌺 తెలంగాణ చారిత్రక బోనాలు పండుగ శుభాకాంక్షలు · ఆషాఢ మాసం · " + teluguDay + " 🌺";
-        } else if (month == 8 && day >= 14 && day <= 22) {
-            greeting = "🪢 రక్షాబంధన్ & వరలక్ష్మి వ్రత శుభాకాంక్షలు · శ్రావణ మాసం · " + teluguDay + " 🪢";
-        } else if ((month == 8 && day >= 25) || (month == 9 && day <= 15)) {
-            greeting = "🐘 వినాయక చవితి శుభాకాంక్షలు · భాద్రపద శుక్ల చవితి · " + teluguDay + " 🐘";
-        } else if ((month == 12 && day >= 30) || (month == 1 && day <= 3)) {
-            greeting = "✨ నూతన సంవత్సర శుభాకాంక్షలు · Happy New Year · " + teluguDay + " ✨";
-        } else {
-            greeting = "🕉️ శ్రీ సాంబ సదాశివాయ నమః · " + teluguDay + " శుభ దినం · తూం వారి నివాసం 🕉️";
-        }
-
-        festivalText.setText(greeting);
     }
 
     /** Shows the Wi-Fi network name on the button when we can read it, otherwise the connection type. */
@@ -481,14 +412,29 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         try {
             startActivity(i);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, "Not available on this TV", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.not_available, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /** Shows the "All apps" hint while focus is on the dock or top bar and more apps sit below. */
+    private void updateMoreAppsHint(boolean inGrid) {
+        boolean show = !inGrid && adapter.getItemCount() > COLUMNS;
+        if (show) moreAppsHint.setVisibility(View.VISIBLE);
+        moreAppsHint.animate().alpha(show ? 1f : 0f).setDuration(200)
+                .withEndAction(() -> { if (!show) moreAppsHint.setVisibility(View.GONE); }).start();
+    }
+
+    /** True when the Inputs menu would list something (HDMI/AV passthrough or a Live TV app). */
+    private boolean hasInputs() {
+        if (!HdmiHelper.passthroughInputs(this).isEmpty()) return true;
+        return !liveTvPkg.isEmpty() && getPackageManager().getLeanbackLaunchIntentForPackage(liveTvPkg) != null;
     }
 
     /** Dropdown menu under the Inputs pill: HDMI ports (with connection state), AV and Live TV. */
     private void showInputs() {
         View anchor = findViewById(R.id.btnInputs);
         View panel = getLayoutInflater().inflate(R.layout.popup_inputs, root, false);
+        Fonts.applyWeights(panel);
         LinearLayout rows = panel.findViewById(R.id.rows);
 
         // Compact: as wide as the Inputs pill (a touch wider so "HDMI 1" fits), hanging right below it.
@@ -502,15 +448,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         boolean sawNonHdmi = false;
         if (tim != null) {
-            List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
-            // HDMI ports first in port order, then AV and the rest.
-            Collections.sort(inputs, (a, b) -> {
-                boolean ha = a.getType() == TvInputInfo.TYPE_HDMI, hb = b.getType() == TvInputInfo.TYPE_HDMI;
-                if (ha != hb) return ha ? -1 : 1;
-                return String.valueOf(a.loadLabel(this)).compareToIgnoreCase(String.valueOf(b.loadLabel(this)));
-            });
-            for (TvInputInfo info : inputs) {
-                if (!info.isPassthroughInput()) continue;
+            for (TvInputInfo info : HdmiHelper.passthroughInputs(this)) {
                 CharSequence l = info.loadLabel(this);
                 String label = l == null ? info.getId() : l.toString();
                 boolean hdmi = info.getType() == TvInputInfo.TYPE_HDMI;
@@ -556,6 +494,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
     private void addInputRow(LinearLayout rows, PopupWindow popup, int iconRes, String title, int state, Runnable action) {
         View row = getLayoutInflater().inflate(R.layout.item_input, rows, false);
+        Fonts.applyWeights(row);
         ((ImageView) row.findViewById(R.id.icon)).setImageResource(iconRes);
         ((TextView) row.findViewById(R.id.title)).setText(title);
         TextView status = row.findViewById(R.id.status);

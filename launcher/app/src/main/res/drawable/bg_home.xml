@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Neutral dark wallpaper behind the home screen and PenDrive viewer. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:type="linear"
+        android:angle="315"
+        android:startColor="#FF0F2027"
+        android:centerColor="#FF203A43"
+        android:endColor="#FF2C5364" />
+</shape>

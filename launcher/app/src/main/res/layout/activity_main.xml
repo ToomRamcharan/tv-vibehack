@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     android:background="#FF000000">
 
-    <!-- Divine Shiva and Parvathi Wallpaper Background -->
+    <!-- Wallpaper background -->
     <ImageView
         android:id="@+id/wallpaper"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_shiva_parvathi" />
+        android:src="@drawable/bg_home" />
 
     <!-- Ambient glow in the colour of the focused dock app. -->
     <View
@@ -28,7 +28,7 @@
         android:layout_marginStart="68dp"
         android:alpha="0"
         android:textColor="#FFFFFFFF"
-        android:textSize="48sp"
+        android:textSize="34sp"
         android:fontFamily="@font/outfit"
         android:fontVariationSettings="'wght' 400"
         android:letterSpacing="-0.02"
@@ -64,7 +64,7 @@
                     android:id="@+id/greeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="NLRC"
+                    android:text="@string/nlrc_brand"
                     android:textColor="#FFFFFFFF"
                     android:textSize="36sp"
                     android:fontFamily="@font/outfit"
@@ -76,54 +76,29 @@
                     android:shadowDy="6"
                     android:shadowRadius="12" />
 
-                <!-- Founder and Subtitle Row -->
-                <LinearLayout
+                <!-- Tagline (translated) -->
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="3dp">
+                    android:layout_marginTop="3dp"
+                    android:text="@string/nlrc_tagline"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/outfit"
+                    android:fontVariationSettings="'wght' 700"
+                    android:letterSpacing="0.12"
+                    android:textAllCaps="true"
+                    android:shadowColor="#B3000000"
+                    android:shadowDx="1"
+                    android:shadowDy="3"
+                    android:shadowRadius="6" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ENTERTAINMENT HUB"
-                        android:textColor="#FFFFFFFF"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 700"
-                        android:letterSpacing="0.12"
-                        android:textAllCaps="true"
-                        android:shadowColor="#B3000000"
-                        android:shadowDx="1"
-                        android:shadowDy="3"
-                        android:shadowRadius="6" />
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="12dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="#44FFFFFF" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ENTERTAINMENT HUB"
-                        android:textColor="#B3FFFFFF"
-                        android:textSize="11sp"
-                        android:fontFamily="@font/outfit"
-                        android:fontVariationSettings="'wght' 500"
-                        android:letterSpacing="0.16"
-                        android:textAllCaps="true" />
-                </LinearLayout>
-
-                <!-- Father's Greeting: Time-based Respectful Telugu Wish -->
+                <!-- Time-of-day greeting -->
                 <TextView
                     android:id="@+id/fatherGreeting"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="శుభ మధ్యాహ్నం తూం నారాయణ గారు! 🙏"
+                    android:text="@string/greeting_afternoon"
                     android:textColor="#FFF59D"
                     android:textSize="17sp"
                     android:fontFamily="@font/outfit"
@@ -170,7 +145,7 @@
                         android:format12Hour="a"
                         android:format24Hour=""
                         android:textColor="#B3FFFFFF"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:fontFamily="@font/outfit"
                         android:fontVariationSettings="'wght' 500"
                         android:letterSpacing="0.08"
@@ -194,8 +169,8 @@
                         android:layout_marginBottom="8dp"
                         android:format12Hour="EEEE  d MMMM"
                         android:format24Hour="EEEE  d MMMM"
-                        android:textColor="#99FFFFFF"
-                        android:textSize="13sp"
+                        android:textColor="#D9FFFFFF"
+                        android:textSize="16sp"
                         android:fontFamily="@font/outfit"
                         android:fontVariationSettings="'wght' 400"
                         android:letterSpacing="0.12"
@@ -236,35 +211,6 @@
             </LinearLayout>
         </RelativeLayout>
 
-        <!-- Telangana Festival Wishes Banner (Dynamic) -->
-        <LinearLayout
-            android:id="@+id/festivalBanner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_festival_pill"
-            android:paddingStart="14dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_marginTop="6dp">
-
-            <TextView
-                android:id="@+id/festivalText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🌸 సద్దుల బతుకమ్మ &amp; విజయదశమి దసరా శుభాకాంక్షలు · Happy Bathukamma &amp; Dussehra! 🌸"
-                android:textColor="#FFF9C4"
-                android:textSize="12sp"
-                android:fontFamily="@font/outfit"
-                android:fontVariationSettings="'wght' 600"
-                android:letterSpacing="0.04"
-                android:shadowColor="#E6000000"
-                android:shadowDx="1"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-        </LinearLayout>
 
         <!-- Subtle clean divider line -->
         <View
@@ -301,5 +247,25 @@
         android:layout_height="10dp"
         android:alpha="0"
         android:importantForAccessibility="no" />
+
+    <!-- Tells first-time users the full app grid is below the dock. -->
+    <TextView
+        android:id="@+id/moreAppsHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_hint_pill"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:text="@string/more_apps"
+        android:textColor="#FFFFFFFF"
+        android:textSize="15sp"
+        android:fontFamily="@font/outfit"
+        android:fontVariationSettings="'wght' 600"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
 </FrameLayout>
