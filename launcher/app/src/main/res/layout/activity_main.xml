@@ -184,8 +184,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_alignBottom="@id/leftBlock"
-                android:layout_marginBottom="6dp"
+                android:layout_above="@+id/appVersion"
+                android:layout_marginBottom="4dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -209,6 +209,21 @@
                     android:drawableStart="@drawable/ic_settings"
                     android:nextFocusDown="@+id/grid" />
             </LinearLayout>
+
+            <!-- Installed build, so support can tell which version a TV runs. Set in MainActivity. -->
+            <TextView
+                android:id="@+id/appVersion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignBottom="@id/leftBlock"
+                android:layout_marginEnd="8dp"
+                android:focusable="false"
+                android:textColor="#59FFFFFF"
+                android:textSize="13sp"
+                android:fontFamily="@font/outfit"
+                android:fontVariationSettings="'wght' 400"
+                android:letterSpacing="0.08" />
         </RelativeLayout>
 
 
