@@ -148,7 +148,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
             int hdmiIdx = 1;
             for (TvInputInfo info : HdmiHelper.passthroughInputs(ctx)) {
                 boolean isHdmi = info.getType() == TvInputInfo.TYPE_HDMI;
-                int state = tim.getInputState(info.getId());
+                int state = HdmiHelper.inputState(tim, info.getId());
                 boolean isConnected = (state == TvInputManager.INPUT_STATE_CONNECTED);
 
                 Intent switchIntent = new Intent(Intent.ACTION_VIEW)
