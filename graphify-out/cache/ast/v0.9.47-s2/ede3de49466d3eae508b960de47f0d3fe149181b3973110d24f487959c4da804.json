@@ -1,1 +1,0 @@
-{"nodes": [{"id": "$graphify-root$_launcher_app_build_gradle", "label": "build.gradle", "file_type": "code", "source_file": "launcher/app/build.gradle", "source_location": "L1"}], "edges": [], "raw_calls": [], "parse_errors": {"first_error_line": 24, "multiline_error": false}}
