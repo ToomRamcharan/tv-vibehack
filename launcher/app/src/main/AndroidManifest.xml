@@ -21,7 +21,8 @@
         android:banner="@drawable/banner"
         android:theme="@style/Theme.TvHome"
         android:directBootAware="true"
-        android:allowBackup="false">
+        android:allowBackup="false"
+        android:requestLegacyExternalStorage="true">
 
         <activity
             android:name=".MainActivity"
