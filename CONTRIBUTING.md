@@ -58,6 +58,24 @@ brand-specific knowledge in `examples/`.
 `tools/tv.py` and `tools/b64push.py` exist because the stock `adb` is blocked on recent macOS. If
 you find a cleaner workaround, open an issue first.
 
+## Release signing
+
+Release APKs are signed with a key that only the maintainer holds. `launcher/app/build.gradle` signs
+`assembleRelease` only when `NLRC_KEYSTORE` is set, so normal local builds need nothing.
+
+Create the key once, keep it out of git and back it up somewhere safe:
+
+    keytool -genkeypair -v -keystore nlrc-release.jks -keyalg RSA -keysize 4096 -validity 10000 -alias nlrc
+
+Then build with these environment variables set:
+`NLRC_KEYSTORE` (path to the `.jks`), `NLRC_KEYSTORE_PASSWORD`, `NLRC_KEY_ALIAS`, `NLRC_KEY_PASSWORD`.
+
+For GitHub Actions, add these repository secrets: `NLRC_KEYSTORE_BASE64` (the output of
+`base64 -w0 nlrc-release.jks` on Linux, `base64 -i nlrc-release.jks` on macOS), `NLRC_KEYSTORE_PASSWORD`, `NLRC_KEY_ALIAS` and `NLRC_KEY_PASSWORD`.
+
+If the key is lost, nobody can update the launcher in place: users would have to uninstall it first,
+which also resets their dock order and hidden apps.
+
 ## Pull requests
 
 - One topic per PR. Small is fine.
