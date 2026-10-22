@@ -105,6 +105,37 @@ The launcher follows the TV's language: English, Portuguese, Spanish, French, It
 
 ---
 
+## 🖱️ Easy install (no coding)
+
+No terminal needed. Download the **NLRC Setup** app, point it at your TV, and it does the rest. Tested on a Xiaomi Mi Box (Android 9).
+
+1. Open the project's **Releases** page on GitHub and download the file for your computer (available once the first release is published):
+   - **Windows:** the `.exe` or `.msi` installer
+   - **Mac:** the `.dmg`
+   - **Linux:** the `.AppImage` or `.deb`
+2. On the TV, open Settings → System → About and click **Build** 7 times, then in Developer Options turn on **USB debugging** (and **Network debugging** if you see it). Make sure the computer and the TV are on the same Wi-Fi.
+3. Open NLRC Setup, type the TV's IP address (port 5555), accept the prompt that appears on the TV, and follow the steps.
+
+| Pick what to do | Find your TV |
+|---|---|
+| ![NLRC Setup welcome screen with Install and Restore choices](docs/preview/setup-welcome.png) | ![Connect screen listing TVs found on the Wi-Fi](docs/preview/setup-connect.png) |
+| **Install, step by step** | **Done** |
+| ![Install progress checklist](docs/preview/setup-working.png) | ![All set screen](docs/preview/setup-done.png) |
+
+The app works out the right way to make the launcher your home screen for your TV by itself (the Android 14 Google TV way or the Android 9 way), and tells you up front if your TV isn't supported yet. It only works with TVs it can reach over the network. USB is not supported.
+
+The app speaks the same 11 languages as the launcher and follows your computer's language.
+
+Changed your mind? The **Restore** option puts the TV back to how it was and removes the launcher.
+
+**First time you open it:** the app isn't signed with a paid developer certificate, so your computer will warn you.
+- **Windows:** click **More info**, then **Run anyway**.
+- **Mac:** if it says the app can't be opened, go to **System Settings → Privacy & Security** and click **Open Anyway** (on older macOS: right-click the app and choose **Open**).
+
+Prefer to do it by hand? The **Quick Start** below is the manual alternative. Want to work on the app itself? See [`installer/README.md`](installer/README.md).
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Enable ADB on your Android TV
@@ -127,7 +158,7 @@ adb shell pm disable-user --user 0 com.google.android.tvrecommendations
 *(See [`examples/`](examples/) for model-specific profiles).*
 
 ### 4. Build & Install the Launcher
-Needs JDK 17. Gradle picks it up automatically, even if your shell's `JAVA_HOME` points to an older Java.
+Needs JDK 17 and the Android SDK (point `JAVA_HOME` at JDK 17 if your default Java is different). More build details in [`launcher/README.md`](launcher/README.md).
 ```bash
 cd launcher
 ./gradlew assembleDebug
@@ -156,7 +187,7 @@ adb shell pm disable-user --user 0 com.google.android.tvlauncher
 
 | Path | Description |
 |---|---|
-| [`launcher/`](launcher/) | Native Android TV launcher with Apple tvOS aesthetics, D-pad navigation, ambient glow, and Direct Boot awareness. |
+| [`launcher/`](launcher/) | Native Android TV launcher with Apple tvOS aesthetics, D-pad navigation, ambient glow, and Direct Boot awareness. Build notes in [`launcher/README.md`](launcher/README.md). |
 | [`launcher/.../HomeKeyService.java`](launcher/app/src/main/java/com/gathin/tvhome/HomeKeyService.java) | Fail-safe Accessibility Service intercepting Home button and sponsored hotkeys. |
 | [`launcher/.../HdmiHelper.java`](launcher/app/src/main/java/com/gathin/tvhome/HdmiHelper.java) | Direct Realtek / Android TV hardware passthrough input launcher. |
 | [`launcher/.../AppAdapter.java`](launcher/app/src/main/java/com/gathin/tvhome/AppAdapter.java) | App and input tiles, plus the hold-OK menu to pin, reorder and hide tiles. |
@@ -165,6 +196,8 @@ adb shell pm disable-user --user 0 com.google.android.tvlauncher
 | [`launcher/.../Fonts.java`](launcher/app/src/main/java/com/gathin/tvhome/Fonts.java) | Re-applies font weights on Android 9, where the variable Outfit font otherwise renders Thin. |
 | [`launcher/app/src/main/res/values*/`](launcher/app/src/main/res/) | UI text in 11 languages (`strings.xml` per language). |
 | [`examples/acer-v-pro-32-qled/`](examples/acer-v-pro-32-qled/) | Comprehensive teardown and architecture notes for Acer / MOKA Realtek RTD QLED TVs. |
+| [`installer/`](installer/) | **NLRC Setup**, the desktop app (Windows, macOS, Linux) that installs the launcher over Wi-Fi with no terminal. Tauri + Rust backend, Svelte + daisyUI screens. See [`installer/README.md`](installer/README.md). |
+| [`.github/workflows/installer-release.yml`](.github/workflows/installer-release.yml) | On a `setup-v*` tag: builds the signed launcher APK and the NLRC Setup downloads, then drafts a GitHub Release. |
 | [`tools/`](tools/) | Helper scripts: `safe_switch.bat` / `safe_switch.sh` for one-click toggle between stock and custom launcher. |
 
 ---
