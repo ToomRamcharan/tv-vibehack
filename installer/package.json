@@ -1,0 +1,13 @@
+{
+  "name": "nlrc-setup",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "tauri": "tauri",
+    "dev:tv": "node -e \"require('fs').copyFileSync('../launcher/app/build/outputs/apk/debug/app-debug.apk', 'src-tauri/resources/nlrc.apk')\" && tauri dev --config src-tauri/tauri.bundle.conf.json",
+    "bundle": "tauri build --config src-tauri/tauri.bundle.conf.json"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
