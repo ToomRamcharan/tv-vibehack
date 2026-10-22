@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 6/7 cannot load framework font resources; use system families. -->
+    <style name="FontOutfit" parent="">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="FontOutfitW200" parent="FontOutfit">
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+    <style name="FontOutfitW400" parent="FontOutfit">
+    </style>
+    <style name="FontOutfitW500" parent="FontOutfit">
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+    <style name="FontOutfitW600" parent="FontOutfit">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="FontOutfitW700" parent="FontOutfit">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="FontOutfitW900" parent="FontOutfit">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

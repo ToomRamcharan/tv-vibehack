@@ -45,7 +45,7 @@
             android:ellipsize="end"
             android:textColor="#FFFFFFFF"
             android:textSize="13sp"
-            android:fontFamily="@font/outfit"
+            style="@style/FontOutfit"
             android:visibility="gone" />
     </FrameLayout>
 
@@ -62,7 +62,6 @@
         android:translationY="-6dp"
         android:textColor="#F2FFFFFF"
         android:textSize="14sp"
-        android:fontFamily="@font/outfit"
-        android:fontVariationSettings="'wght' 500"
+        style="@style/FontOutfitW500"
         android:letterSpacing="0.02" />
 </FrameLayout>

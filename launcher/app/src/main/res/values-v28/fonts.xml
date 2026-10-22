@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- XML variable-font weights are available from Android 9. -->
+    <style name="FontOutfit" parent="">
+        <item name="android:fontFamily">@font/outfit</item>
+    </style>
+    <style name="FontOutfitW200" parent="FontOutfit">
+        <item name="android:fontVariationSettings">\'wght\' 200</item>
+    </style>
+    <style name="FontOutfitW400" parent="FontOutfit">
+        <item name="android:fontVariationSettings">\'wght\' 400</item>
+    </style>
+    <style name="FontOutfitW500" parent="FontOutfit">
+        <item name="android:fontVariationSettings">\'wght\' 500</item>
+    </style>
+    <style name="FontOutfitW600" parent="FontOutfit">
+        <item name="android:fontVariationSettings">\'wght\' 600</item>
+    </style>
+    <style name="FontOutfitW700" parent="FontOutfit">
+        <item name="android:fontVariationSettings">\'wght\' 700</item>
+    </style>
+    <style name="FontOutfitW900" parent="FontOutfit">
+        <item name="android:fontVariationSettings">\'wght\' 900</item>
+    </style>
+</resources>

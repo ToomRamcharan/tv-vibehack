@@ -131,7 +131,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         // ── 2. TV Inputs (HDMI 1 / Jio TV, HDMI 2, AV) ──────────────────────
         TvInputManager tim = (TvInputManager) ctx.getSystemService(Context.TV_INPUT_SERVICE);
         if (tim != null) {
-            List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
+            List<TvInputInfo> inputs = new ArrayList<>(TvInputCompat.list(tim));
             // Sort: HDMI first, then others
             Collections.sort(inputs, (a, b) -> {
                 boolean ha = a.getType() == TvInputInfo.TYPE_HDMI;

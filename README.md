@@ -104,6 +104,9 @@ adb shell pm disable-user --user 0 com.google.android.tvrecommendations
 *(See [`examples/`](examples/) for model-specific profiles).*
 
 ### 4. Build & Install the Launcher
+
+The launcher supports Android 6.0 (API 23) and later. Older releases use system fonts;
+Android 8+ retain the original Outfit font. See [compatibility and smoke checks](docs/android6-compatibility.md).
 ```bash
 cd launcher
 ./gradlew assembleDebug

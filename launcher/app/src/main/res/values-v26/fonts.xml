@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Framework font resources are available from Android 8; weights use values-v28. -->
+    <style name="FontOutfit" parent="">
+        <item name="android:fontFamily">@font/outfit</item>
+    </style>
+    <style name="FontOutfitW200" parent="FontOutfit">
+    </style>
+    <style name="FontOutfitW400" parent="FontOutfit">
+    </style>
+    <style name="FontOutfitW500" parent="FontOutfit">
+    </style>
+    <style name="FontOutfitW600" parent="FontOutfit">
+    </style>
+    <style name="FontOutfitW700" parent="FontOutfit">
+    </style>
+    <style name="FontOutfitW900" parent="FontOutfit">
+    </style>
+</resources>

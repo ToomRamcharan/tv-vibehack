@@ -502,7 +502,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         TvInputManager tim = (TvInputManager) getSystemService(TV_INPUT_SERVICE);
         boolean sawNonHdmi = false;
         if (tim != null) {
-            List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
+            List<TvInputInfo> inputs = new ArrayList<>(TvInputCompat.list(tim));
             // HDMI ports first in port order, then AV and the rest.
             Collections.sort(inputs, (a, b) -> {
                 boolean ha = a.getType() == TvInputInfo.TYPE_HDMI, hb = b.getType() == TvInputInfo.TYPE_HDMI;
