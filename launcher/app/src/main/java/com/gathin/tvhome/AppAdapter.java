@@ -129,6 +129,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
         }
 
         // ── 2. TV Inputs (HDMI 1 / Jio TV, HDMI 2, AV) ──────────────────────
+        if (NativeInputPicker.available(ctx)) {
+            fresh.add(new Entry(ctx.getString(R.string.inputs), NativeInputPicker.TILE_ID,
+                    null, ctx.getDrawable(R.drawable.ic_input), null, 0xFF555555));
+        }
         TvInputManager tim = (TvInputManager) ctx.getSystemService(Context.TV_INPUT_SERVICE);
         if (tim != null) {
             List<TvInputInfo> inputs = new ArrayList<>(tim.getTvInputList());
@@ -374,6 +378,11 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     private void launch(Entry e) {
         try {
+            if (NativeInputPicker.TILE_ID.equals(e.pkg)) {
+                if (!NativeInputPicker.show(ctx))
+                    Toast.makeText(ctx, R.string.no_inputs, Toast.LENGTH_SHORT).show();
+                return;
+            }
             if ("com.netflix.ninja".equals(e.pkg) || "com.amazon.amazonvideo.livingroom".equals(e.pkg)) {
                 // User requirement: Clicking Netflix or Prime Video opens HDMI 2 (Jio TV)
                 HdmiHelper.switchToHdmi2(ctx, true);

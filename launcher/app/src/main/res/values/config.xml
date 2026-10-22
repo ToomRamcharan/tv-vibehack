@@ -22,6 +22,10 @@
     <!-- The TV's Live TV / tuner app, offered at the end of the Inputs menu. -->
     <string name="live_tv_package" translatable="false">com.realtek.tv</string>
 
+    <!-- Optional explicit vendor input chooser. Empty values retain the TIF picker. -->
+    <string name="native_input_picker_action" translatable="false"></string>
+    <string name="native_input_picker_receiver" translatable="false"></string>
+
     <!-- Tiles per row in the grid; the dock always has this many slots. -->
     <integer name="columns">4</integer>
 
