@@ -38,8 +38,15 @@ Build with `TV_HOST=<ip> launcher/build-and-install.sh` (JDK 17, Android SDK pla
 build-tools 34.0.0; on macOS `brew install openjdk@17 android-commandlinetools` then
 `sdkmanager "platforms;android-34" "build-tools;34.0.0"`).
 
+Build with plain `./gradlew assembleDebug` if `build-and-install.sh` can't find JDK 17 at its
+Homebrew path; Gradle finds an installed JDK 17 by itself.
+
+All on-screen text lives in `app/src/main/res/values*/strings.xml` (11 languages). When you add a
+string, add it to every one of those files, or mark it `translatable="false"` if it's a brand or
+technical name. `./gradlew lintDebug` flags any language you missed.
+
 Ideas that fit the direction: an idle screensaver with clock and ambient colour, per-TV icon packs
-for apps without banners, a settings screen to edit the dock from the TV, localisation.
+for apps without banners, more languages.
 Ideas that don't: recommendation rows, content feeds, ads, telemetry.
 
 ## 3. Improve the prompt and tools
@@ -50,6 +57,24 @@ brand-specific knowledge in `examples/`.
 
 `tools/tv.py` and `tools/b64push.py` exist because the stock `adb` is blocked on recent macOS. If
 you find a cleaner workaround, open an issue first.
+
+## Release signing
+
+Release APKs are signed with a key that only the maintainer holds. `launcher/app/build.gradle` signs
+`assembleRelease` only when `NLRC_KEYSTORE` is set, so normal local builds need nothing.
+
+Create the key once, keep it out of git and back it up somewhere safe:
+
+    keytool -genkeypair -v -keystore nlrc-release.jks -keyalg RSA -keysize 4096 -validity 10000 -alias nlrc
+
+Then build with these environment variables set:
+`NLRC_KEYSTORE` (path to the `.jks`), `NLRC_KEYSTORE_PASSWORD`, `NLRC_KEY_ALIAS`, `NLRC_KEY_PASSWORD`.
+
+For GitHub Actions, add these repository secrets: `NLRC_KEYSTORE_BASE64` (the output of
+`base64 -w0 nlrc-release.jks` on Linux, `base64 -i nlrc-release.jks` on macOS), `NLRC_KEYSTORE_PASSWORD`, `NLRC_KEY_ALIAS` and `NLRC_KEY_PASSWORD`.
+
+If the key is lost, nobody can update the launcher in place: users would have to uninstall it first,
+which also resets their dock order and hidden apps.
 
 ## Pull requests
 

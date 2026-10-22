@@ -1,0 +1,25 @@
+[package]
+name = "nlrc-setup"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "nlrc_setup_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+adb_client = { version = "3.2.3", default-features = false }
+rsa = "0.9"
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+dirs = "6"
+local-ip-address = "0.6"
+
+[dev-dependencies]
+serde_json = "1"
+tempfile = "3"

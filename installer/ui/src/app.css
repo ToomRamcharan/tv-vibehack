@@ -1,0 +1,99 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+@plugin 'daisyui' {
+  themes: false;
+}
+
+@plugin 'daisyui/theme' {
+  name: 'nlrc';
+  default: true;
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f6fb;
+  --color-base-300: #e4e8f1;
+  --color-base-content: #141a2a;
+  --color-primary: #1b5fd6;
+  --color-primary-content: #ffffff;
+  --color-secondary: #e8effd;
+  --color-secondary-content: #16408f;
+  --color-accent: #2979ff;
+  --color-accent-content: #ffffff;
+  --color-neutral: #1e2638;
+  --color-neutral-content: #eef1f7;
+  --color-info: #2563eb;
+  --color-info-content: #ffffff;
+  --color-success: #15803d;
+  --color-success-content: #ffffff;
+  --color-warning: #b45309;
+  --color-warning-content: #ffffff;
+  --color-error: #b42323;
+  --color-error-content: #ffffff;
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin 'daisyui/theme' {
+  name: 'nlrc-dark';
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #141a26;
+  --color-base-200: #0e131d;
+  --color-base-300: #273044;
+  --color-base-content: #e6eaf3;
+  --color-primary: #6aa5ff;
+  --color-primary-content: #0b1220;
+  --color-secondary: #1c2740;
+  --color-secondary-content: #b9d2ff;
+  --color-accent: #2979ff;
+  --color-accent-content: #ffffff;
+  --color-neutral: #273044;
+  --color-neutral-content: #e6eaf3;
+  --color-info: #6aa5ff;
+  --color-info-content: #0b1220;
+  --color-success: #4ade80;
+  --color-success-content: #052e16;
+  --color-warning: #fbbf24;
+  --color-warning-content: #2a1a00;
+  --color-error: #f87171;
+  --color-error-content: #2b0606;
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+input {
+  user-select: text;
+}
+
+/* Tailwind 4 resets buttons to the default arrow cursor. */
+button:not(:disabled),
+summary {
+  cursor: pointer;
+}

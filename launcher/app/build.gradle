@@ -10,14 +10,36 @@ android {
         applicationId 'com.gathin.tvhome'
         minSdk 26
         targetSdk 29
-        versionCode 2
-        versionName '2.0'
+        versionCode 3
+        versionName '2.1'
+    }
+
+    signingConfigs {
+        release {
+            if (System.getenv('NLRC_KEYSTORE')) {
+                storeFile file(System.getenv('NLRC_KEYSTORE'))
+                storePassword System.getenv('NLRC_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('NLRC_KEY_ALIAS')
+                keyPassword System.getenv('NLRC_KEY_PASSWORD')
+            }
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            // Some res .png files are really JPEGs, which AAPT2's PNG cruncher rejects.
+            crunchPngs false
+            // Without the keystore env vars, local builds stay unsigned as before.
+            if (System.getenv('NLRC_KEYSTORE')) {
+                signingConfig signingConfigs.release
+            }
         }
+    }
+
+    lint {
+        // Sideloaded TV launcher, not on Play; targetSdk 29 is kept on purpose.
+        disable 'ExpiredTargetSdkVersion'
     }
 
     compileOptions {

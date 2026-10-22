@@ -34,7 +34,8 @@ public class HomeKeyService extends AccessibilityService {
                 if (STOCK_LAUNCHER_PKG.contentEquals(pkgName)) {
                     // Stock Google TV is trying to display its home screen. Intercept and show NLRC.
                     launchNlrcHome();
-                } else if (NETFLIX_PKG.contentEquals(pkgName) || PRIME_PKG.contentEquals(pkgName)) {
+                } else if ((NETFLIX_PKG.contentEquals(pkgName) || PRIME_PKG.contentEquals(pkgName))
+                        && HdmiHelper.isAvailable(this)) {
                     // Netflix or Prime Video opened (e.g. from dedicated remote hotkey)
                     // Intercept and redirect immediately to HDMI 2 (Jio TV Set Top Box)
                     Log.i(TAG, "Intercepted " + pkgName + " -> Redirecting to HDMI 2 (Jio TV)");
@@ -56,10 +57,11 @@ public class HomeKeyService extends AccessibilityService {
             }
 
             // Remote hotkeys for Netflix, Prime Video, or color buttons
-            if (keyCode == KeyEvent.KEYCODE_BUTTON_3      // Standard Netflix button
+            if ((keyCode == KeyEvent.KEYCODE_BUTTON_3     // Standard Netflix button
                     || keyCode == KeyEvent.KEYCODE_BUTTON_4  // Standard Prime Video button
                     || keyCode == KeyEvent.KEYCODE_PROG_RED  // Color Red
-                    || keyCode == KeyEvent.KEYCODE_PROG_GREEN) { // Color Green
+                    || keyCode == KeyEvent.KEYCODE_PROG_GREEN)   // Color Green
+                    && HdmiHelper.isAvailable(this)) {
                 Log.i(TAG, "Intercepted remote key " + keyCode + " -> Switching to HDMI 2 (Jio TV)");
                 HdmiHelper.switchToHdmi2(this, true);
                 return true; // Consume event so default app isn't launched

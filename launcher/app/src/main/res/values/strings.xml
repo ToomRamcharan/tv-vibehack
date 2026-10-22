@@ -1,19 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NLRC Home</string>
+    <string name="app_name" translatable="false">NLRC Home</string>
     <string name="inputs">Inputs</string>
-    <string name="wifi">Wi-Fi</string>
+    <string name="wifi" translatable="false">Wi-Fi</string>
     <string name="settings">Settings</string>
-    <string name="choose_input">Inputs</string>
     <string name="connected">Connected</string>
-    <string name="standby">Standby</string>
     <string name="not_connected">No device</string>
     <string name="live_tv">Live TV</string>
     <string name="no_inputs">No inputs found</string>
-    <string name="nlrc_brand">NLRC</string>
+    <string name="nlrc_brand" translatable="false">NLRC</string>
     <string name="nlrc_tagline">Entertainment Hub</string>
-    <string name="nlrc_founder">Intelligent TV OS</string>
-    <string name="ethernet">Ethernet</string>
+    <string name="ethernet" translatable="false">Ethernet</string>
     <string name="offline">Offline</string>
-    <string name="accessibility_service_description">NLRC Launcher Key and Window Interceptor</string>
+    <string name="accessibility_service_description" translatable="false">NLRC Launcher Key and Window Interceptor</string>
+
+    <!-- Greetings and dock menu; translated in values-pt/es/fr/it/de/nl/ru/zh/te/hi. -->
+    <string name="greeting_morning">Good morning! Welcome</string>
+    <string name="greeting_afternoon">Good afternoon! Welcome</string>
+    <string name="greeting_evening">Good evening! Welcome</string>
+    <string name="greeting_night">Good night!</string>
+    <string name="pin_to_dock">Pin to dock</string>
+    <string name="remove_from_dock">Remove from dock</string>
+    <string name="app_info">App info</string>
+    <string name="pinned_to_dock">Pinned %1$s to dock</string>
+    <string name="removed_from_dock">Removed %1$s from dock</string>
+    <string name="move_left">Move left</string>
+    <string name="move_right">Move right</string>
+    <string name="hide_app">Hide</string>
+    <string name="hidden_apps">Hidden apps</string>
+    <string name="app_hidden">%1$s hidden</string>
+    <string name="app_shown">%1$s shown again</string>
+
+    <!-- PenDrive viewer and video player -->
+    <string name="pd_tile">Your videos</string>
+    <string name="pd_subtitle">Videos on this TV and USB drives</string>
+    <string name="pd_count">Videos: %1$d</string>
+    <string name="pd_none">No videos</string>
+    <string name="pd_empty">No videos found.\nCopy videos to the Movies folder or plug in a USB drive.</string>
+    <string name="pd_permission">Allow storage access to show your videos</string>
+    <string name="pd_hint">[OK] Play  ·  [◄ / ►] Choose  ·  [BACK] Exit</string>
+    <string name="pd_source_usb">USB drive</string>
+    <string name="pd_source_tv">TV storage</string>
+    <string name="vp_switch_hint">[▲ / ▼] Previous / next</string>
+    <string name="vp_controls_hint">[◄ 10s]  ·  [OK] Play/Pause  ·  [10s ►]  ·  [BACK] Exit</string>
+    <string name="vp_playing">▶ Playing</string>
+    <string name="vp_paused">⏸ Paused</string>
+    <string name="vp_position">%1$d of %2$d</string>
+    <string name="vp_first">This is the first video</string>
+    <string name="vp_last">This is the last video</string>
+    <string name="vp_finished">All videos finished</string>
+    <string name="vp_error">This video can\'t be played</string>
+    <string name="vp_not_found">Video not found</string>
+    <string name="vp_forward" translatable="false">⏩ +10 s</string>
+    <string name="vp_rewind" translatable="false">⏪ −10 s</string>
+    <string name="more_apps">▼  All apps</string>
+    <string name="pd_title" translatable="false">NLRC PenDrive Viewer</string>
+    <string name="pd_title_short" translatable="false">PenDrive Viewer</string>
+    <string name="av_input">AV Input</string>
+    <string name="set_top_box">Set-top box</string>
+    <string name="composite">Composite</string>
+    <string name="cant_open">Can\'t open %1$s</string>
+    <string name="not_available">Not available on this TV</string>
+    <string name="hdmi_switching">Switching to HDMI 2… 📺</string>
+    <string name="hdmi_failed">Cannot open HDMI 2</string>
 </resources>

@@ -15,3 +15,10 @@ thumb_part1.jpg
 backup/
 personal_tv_setup/
 .DS_Store
+gradle-daemon-jvm.properties
+.claude
+CLAUDE.md
+graphify-out
+.claude.local.md
+.vscode/
+.superpowers/

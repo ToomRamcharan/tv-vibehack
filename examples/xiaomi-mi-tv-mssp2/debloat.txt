@@ -1,0 +1,20 @@
+# Xiaomi Mi TV (MiTV-MSSP2, codename volver, MediaTek m5621), Android TV 9
+#
+# Apply:   TV_HOST=<tv ip> tools/disable.sh examples/xiaomi-mi-tv-mssp2/debloat.txt
+# Undo:    TV_HOST=<tv ip> tools/restore.sh examples/xiaomi-mi-tv-mssp2/debloat.txt
+# Everything is DISABLED, not uninstalled. Comment out any line you want to keep.
+#
+# Stock launcher: com.google.android.tvlauncher (PatchWall com.mitv.tvhome.atv is also installed).
+# As on the Mi Box 3, disabling the stock launcher is how the custom launcher becomes Home on
+# Android 9; Settings' FallbackHome stays as a backup.
+#
+# Inputs are MediaTek passthrough (com.mediatek.tvinput/.hdmi.HDMIInputService/HW2..HW4, AV on
+# .composite.CompositeInputService/HW1), so the launcher's HDMI/AV tiles work. The Realtek HDMI 2
+# redirect for Netflix / Prime Video doesn't apply, so those apps open normally.
+#
+# adb over Wi-Fi drops on large transfers on this set (it sat behind a Wi-Fi extender). If an
+# install stalls, copy the APK to a USB stick and install it from the TV's file app.
+
+# Google home screen and its recommendation rows
+com.google.android.tvlauncher                  # stock launcher; re-enable to undo the custom Home
+com.google.android.tvrecommendations
