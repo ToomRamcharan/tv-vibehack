@@ -177,6 +177,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     @Override
     protected void onResume() {
         super.onResume();
+        MstarSpeakerSync.sync(this);
         glassShown = false;
         glass.setAlpha(0f);
         heroShown = false;

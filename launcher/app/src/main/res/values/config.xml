@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Exact-firmware opt-in: see examples/xiaomi-mi-tv-4x-speaker-sync/. -->
+    <bool name="mstar_speaker_sync_enabled">false</bool>
+    <string-array name="mstar_speaker_sync_fingerprints" />
+    <integer name="mstar_speaker_sync_media_max">0</integer>
+
     <!-- Apps pinned to the dock row at the bottom, in this order. Slot 0 is HDMI 2 (Jio TV). -->
     <string-array name="dock_apps">
         <item>hdmi_2</item>

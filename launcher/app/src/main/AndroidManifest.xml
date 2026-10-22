@@ -7,6 +7,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- Needed on Android 10 to read the Wi-Fi network name; granted over adb at install time. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -22,6 +23,17 @@
         android:theme="@style/Theme.TvHome"
         android:directBootAware="true"
         android:allowBackup="false">
+
+        <receiver android:name=".MstarSpeakerReceiver" android:exported="false"
+            android:enabled="@bool/mstar_speaker_sync_enabled">
+            <intent-filter>
+                <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+                <action android:name="android.media.STREAM_MUTE_CHANGED_ACTION" />
+                <action android:name="android.media.STREAM_DEVICES_CHANGED_ACTION" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <activity
             android:name=".MainActivity"

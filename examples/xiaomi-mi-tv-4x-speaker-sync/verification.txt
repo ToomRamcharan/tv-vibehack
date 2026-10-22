@@ -1,0 +1,17 @@
+MiTV4X / Android 6.0 API 23 / firmware 8.10.15.652 / MStar mainz
+
+Clean contribution code, built with the independent Android 6 compatibility patch:
+  PASS: scaling/profile guards, native low-volume sync/mute/events
+
+The framework hardware runner verifies:
+  - disabled/default and non-allowlisted firmware do not enable synchronization;
+  - an unexpected maximum media index prevents writes;
+  - non-media volume events are ignored;
+  - a muted stream leaves the deliberately lowered native value unchanged;
+  - an accepted media event restores native level 10 at media 5/50;
+  - the saved low native value is restored in finally.
+
+The test installation used a separate package without HOME registration, a single-DEX
+test harness and an in-memory allowlist. The daily launcher was not replaced.
+All real native writes in this check were at or below 10. The 0..100 endpoints
+were tested only as arithmetic. No high-volume, reboot or external-output claim.
