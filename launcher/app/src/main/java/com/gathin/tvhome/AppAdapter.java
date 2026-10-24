@@ -108,6 +108,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     private final Set<String>  userHidden = new HashSet<>();
     private final List<Entry>  hiddenItems = new ArrayList<>();
     private RecyclerView recycler;
+    private AlertDialog tileMenu;
 
     AppAdapter(Context ctx, TileListener listener, int dockSize) {
         this.ctx        = ctx;
@@ -361,6 +362,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
 
     /** Long-press menu: move within / pin to / remove from the dock, plus App info for real apps. */
     private void showTileMenu(Entry e, int position) {
+        // Holding OK fires both the framework's key long-press and Holder's key-repeat path;
+        // on TVs with a short long-press timeout (TCL: 400 ms) both land before the first menu
+        // takes focus, so the second one must be ignored.
+        if (tileMenu != null && tileMenu.isShowing()) return;
         boolean inDock = position >= 0 && position < dockSize;
         List<String> labels = new ArrayList<>();
         List<Runnable> actions = new ArrayList<>();
@@ -389,7 +394,7 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
                 try { ctx.startActivity(i); } catch (ActivityNotFoundException ignored) {}
             });
         }
-        new AlertDialog.Builder(ctx)
+        tileMenu = new AlertDialog.Builder(ctx)
                 .setTitle(e.label)
                 .setItems(labels.toArray(new String[0]), (d, which) -> actions.get(which).run())
                 .show();
