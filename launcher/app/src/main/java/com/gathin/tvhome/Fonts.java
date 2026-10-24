@@ -1,8 +1,16 @@
 package com.gathin.tvhome;
 
+import android.graphics.Typeface;
+import android.graphics.fonts.Font;
+import android.graphics.fonts.FontFamily;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Outfit is a variable font whose default weight is 100 (Thin). On Android 9 the XML
@@ -10,6 +18,9 @@ import android.widget.TextView;
  * so every label rendered Thin. Re-applying the weight in code after inflation works.
  */
 final class Fonts {
+
+    /** Weight settings → Outfit typeface with that weight baked in (Android 10+). */
+    private static final Map<String, Typeface> OUTFIT = new HashMap<>();
 
     private Fonts() {}
 
@@ -28,5 +39,32 @@ final class Fonts {
             t.setFontVariationSettings(null);
             t.setFontVariationSettings(settings);
         }
+    }
+
+    /**
+     * Gives an Outfit TextView a weight such as {@code "'wght' 500"}, cheaply. setFontVariationSettings
+     * rebuilds the variable font on every call (~13 ms on the TCL TV), which made every new app tile
+     * slow and froze the first scroll to a new row; here the weighted font is built once and shared.
+     */
+    static void setOutfitWeight(TextView t, String settings) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Typeface tf = OUTFIT.get(settings);
+            if (tf == null) {
+                try {
+                    Font font = new Font.Builder(t.getResources(), R.font.outfit)
+                            .setFontVariationSettings(settings).build();
+                    // System fallback keeps app names in scripts Outfit lacks (Hindi, Chinese…) readable.
+                    tf = new Typeface.CustomFallbackBuilder(new FontFamily.Builder(font).build())
+                            .setSystemFallback("sans-serif").build();
+                    OUTFIT.put(settings, tf);
+                } catch (IOException ignored) {}
+            }
+            if (tf != null) {
+                t.setTypeface(tf);
+                return;
+            }
+        }
+        t.setFontVariationSettings(null);
+        t.setFontVariationSettings(settings);
     }
 }

@@ -182,6 +182,21 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         });
     }
 
+    /**
+     * Builds the tiles below the first screen one at a time while the app is idle. Each tile costs
+     * ~8 ms to inflate on the TCL TV, so creating a whole row on the first Down press stuttered.
+     */
+    private void prewarmTiles() {
+        RecyclerView.RecycledViewPool pool = grid.getRecycledViewPool();
+        int want = adapter.getItemCount();
+        pool.setMaxRecycledViews(0, want);
+        Looper.myQueue().addIdleHandler(() -> {
+            if (isDestroyed() || grid.getChildCount() + pool.getRecycledViewCount(0) >= want) return false;
+            pool.putRecycledView(adapter.createViewHolder(grid, 0));
+            return true;
+        });
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -191,6 +206,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroName.setAlpha(0f);
         ambient.setAlpha(0f);
         adapter.reload();
+        prewarmTiles();
         grid.scheduleLayoutAnimation();
         updateGreeting();
         updateFatherGreeting();

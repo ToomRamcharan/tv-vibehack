@@ -323,7 +323,10 @@ public class AppAdapter extends RecyclerView.Adapter<AppAdapter.Holder> {
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
-        Fonts.applyWeights(v);
+        // The name's weight is set here rather than in XML: an XML fontVariationSettings builds a
+        // fresh typeface on every inflate (~12 ms per tile on the TCL TV); Fonts builds it once.
+        Fonts.setOutfitWeight(v.findViewById(R.id.label), "'wght' 400");
+        Fonts.setOutfitWeight(v.findViewById(R.id.name), "'wght' 500");
         return new Holder(v, listener);
     }
 
