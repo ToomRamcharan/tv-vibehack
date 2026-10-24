@@ -144,11 +144,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
         });
 
-        // Liquid feel: soft springs on the highlight's position.
+        // Liquid feel: springs on the highlight's position. Kept firm on purpose: the old soft,
+        // bouncy spring (260 / 0.58) wobbled for ~1 s and pushed weak TV GPUs (TCL Android 14)
+        // to ~19 ms per frame; 600 / 0.75 still slides with a small overshoot and stays at ~8 ms.
         springX = new SpringAnimation(glass, DynamicAnimation.TRANSLATION_X);
         springY = new SpringAnimation(glass, DynamicAnimation.TRANSLATION_Y);
         for (SpringAnimation s : new SpringAnimation[]{springX, springY}) {
-            s.setSpring(new SpringForce().setStiffness(260f).setDampingRatio(0.58f));
+            s.setSpring(new SpringForce().setStiffness(600f).setDampingRatio(0.75f));
         }
 
         View btnInputs = findViewById(R.id.btnInputs);
