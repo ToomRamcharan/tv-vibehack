@@ -69,11 +69,26 @@ impl Tv for AdbTv {
         Ok(String::from_utf8_lossy(&out).trim().to_string())
     }
 
+    /// Push + `pm install` instead of adb_client's streamed install: that one reads a single
+    /// reply after the upload, and Android 14 TVs send an empty ack before "Success", so a
+    /// good install was reported as a failure with no details.
     fn install(&mut self, apk: &Path) -> Result<(), TvError> {
-        self.device.install(&apk, None).map_err(|e| match e {
-            RustADBError::ADBRequestFailed(s) => TvError::InstallFailed(s),
-            other => connection_error(other),
-        })
+        let mut file = fs::File::open(apk).map_err(|e| TvError::Connection(e.to_string()))?;
+        self.device
+            .push(&mut file, &REMOTE_APK)
+            .map_err(connection_error)?;
+        let out = self.shell(&format!("pm install -r {REMOTE_APK}; rm -f {REMOTE_APK}"))?;
+        install_result(out)
+    }
+}
+
+const REMOTE_APK: &str = "/data/local/tmp/nlrc.apk";
+
+fn install_result(out: String) -> Result<(), TvError> {
+    if out.lines().any(|l| l.trim() == "Success") {
+        Ok(())
+    } else {
+        Err(TvError::InstallFailed(out))
     }
 }
 
@@ -114,6 +129,21 @@ mod tests {
                 "{kind:?}"
             );
         }
+    }
+
+    #[test]
+    fn install_output_success() {
+        assert!(install_result("Success".into()).is_ok());
+        assert!(install_result("Performing Streamed Install\nSuccess".into()).is_ok());
+    }
+
+    #[test]
+    fn install_output_failure_keeps_tv_text() {
+        let msg = "Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]";
+        assert_eq!(
+            install_result(msg.into()),
+            Err(TvError::InstallFailed(msg.into()))
+        );
     }
 
     #[test]
